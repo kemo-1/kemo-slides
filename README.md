@@ -3,6 +3,10 @@
 [![Package Version](https://img.shields.io/hexpm/v/beam_party)](https://hex.pm/packages/beam_party)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/beam_party/)
 
+
+run the server and the client with `nodemon src/beam_party.gleam`
+Then the client will be on localhost:5173 
+
 i really enjoyed using partykit which is a JavaScript library for building websocket servers that make it too ez to make collaborative apps and websites
 [PartyKit](https://www.partykit.io/) 
 
