@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tiptap/extension-collaboration": "^2.11.0",
+    "@tiptap/extension-collaboration-cursor": "^2.11.0",
+    "@tiptap/starter-kit": "^2.11.0",
+    "js-base64": "^3.7.7",
+    "tiptap": "^0.15.0",
+    "tiptap-markdown": "^0.8.10",
+    "vite": "^6.0.6",
+    "vite-gleam": "^0.4.3",
+    "y-indexeddb": "^9.0.12",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.21"
+  }
+}

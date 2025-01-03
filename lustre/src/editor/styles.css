@@ -1,0 +1,122 @@
+:root {
+    font-size: xx-large;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+}
+
+.name-page {
+
+    font-size: xx-large;
+    background-color: #242424;
+    /* Dark background */
+    color: #ffffff;
+    /* Light text for contrast */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh;
+
+
+    /* Form Container */
+    form {
+        background-color: #1e1e1e;
+        /* Slightly lighter dark background */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 300px;
+        text-align: center;
+    }
+
+    /* Input Field */
+    input[type="text"] {
+        outline: 8px solid rgba(0, 0, 0, 0.09);
+
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #333;
+        border-radius: 4px;
+        background-color: #2a2a2a;
+        color: #ffffff;
+        font-size: 24px;
+    }
+
+    /* Input Field Focus State */
+    input[type="text"]:focus {
+        border-color: #3f9cff;
+        /* Highlight color for focus */
+        outline: none;
+        box-shadow: 0 0 5px #3f9cff;
+    }
+
+    /* Submit Button */
+    button[type="submit"] {
+        background-color: #3f9cff;
+        color: #000000;
+        border: none;
+        padding: 10px 15px;
+        font-size: 24px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    /* Submit Button Hover */
+    button[type="submit"]:hover {
+        background-color: #337acc;
+    }
+}
+
+
+/* Basic editor styles */
+.tiptap {
+
+    :first-child {
+        margin-top: 0;
+    }
+
+    /* Placeholder (at the top) */
+    p.is-editor-empty:first-child::before {
+        color: var(--gray-4);
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        pointer-events: none;
+    }
+
+    p {
+        word-break: break-all;
+    }
+
+    /* Give a remote user a caret */
+    .collaboration-cursor__caret {
+        border-left: 1px solid #0d0d0d;
+        border-right: 1px solid #0d0d0d;
+        margin-left: -1px;
+        margin-right: -1px;
+        pointer-events: none;
+        position: relative;
+        word-break: normal;
+    }
+
+    /* Render the username above the caret */
+    .collaboration-cursor__label {
+        border-radius: 3px 3px 3px 0;
+        color: #0d0d0d;
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 600;
+        left: -1px;
+        line-height: normal;
+        padding: 0.1rem 0.3rem;
+        position: absolute;
+        top: -1.4em;
+        user-select: none;
+        white-space: nowrap;
+    }
+}
