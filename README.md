@@ -1,24 +1,13 @@
-# Beam Party
+# BeamParty
 
 [![Package Version](https://img.shields.io/hexpm/v/beam_party)](https://hex.pm/packages/beam_party)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/beam_party/)
 
-```sh
-gleam add beam_party@1
-```
-```gleam
-import beam_party
+i really enjoyed using partykit which is a JavaScript library for building websocket servers that make it too ez to make collaborative apps and websites
+[PartyKit](https://www.partykit.io/) 
 
-pub fn main() {
-  // TODO: An example of the project in use
-}
-```
+i wanted to get the same experince i had with partykit into Gleam and leverage the beam vm
 
-Further documentation can be found at <https://hexdocs.pm/beam_party>.
+this is the project i am working on
 
-## Development
-
-```sh
-gleam run   # Run the project
-gleam test  # Run the tests
-```
+i will be using it for collaborative obsidian like web app i don't know if i should seperate the 2 projects or keep them in one repo as an example of how to use the websocket server currently its in a one repo
