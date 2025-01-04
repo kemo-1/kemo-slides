@@ -8,7 +8,7 @@ import gleam/http/response
 import gleam/io
 import gleam/option.{None, Some}
 import mist
-import websocket/pubsub.{Awareness, Doc}
+import websocket/pubsub.{Awareness, Doc, Ydoc}
 import websocket/websocket
 
 fn new_response(status: Int, body: String) {
@@ -37,8 +37,10 @@ pub fn main() {
       let response = case request.path_segments(request) {
         ["api", x] -> {
           case x {
-            "doc" -> Ok(websocket.start(request, pubsub, Doc, Some(table)))
-            "awareness" -> Ok(websocket.start(request, pubsub, Awareness, None))
+            "doc" ->
+              websocket.start(request, pubsub, Ydoc(x), Some(table)) |> Ok
+            "awareness" -> websocket.start(request, pubsub, Ydoc(x), None) |> Ok
+
             _ -> new_response(404, "Not found") |> Ok
           }
         }

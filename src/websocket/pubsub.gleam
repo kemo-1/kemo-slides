@@ -4,6 +4,7 @@ import gleam/list
 import gleam/otp/supervisor
 
 pub type Channel {
+  Ydoc(String)
   Doc
   Awareness
 }
