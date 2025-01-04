@@ -89,13 +89,14 @@ fn handle_message(
               case uset.insert(table, "doc", message) {
                 Ok(_) -> {
                   case
-                    uset.tab2file(table, "database/db.ets", True, True, False)
+                    uset.tab2file(table, "database/db.ets", True, True, True)
                   {
                     Ok(_) ->
                       io.println("document has been saved to file sucessfully")
-                    Error(_) -> {
+                    Error(err) -> {
+                      io.debug(err)
                       io.println(
-                        "document couldn't be saved to file sucessfully",
+                        "document couldn't be saved to file sucessfully because ^^^ ",
                       )
                     }
                   }

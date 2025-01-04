@@ -10,6 +10,6 @@
         "gleam": "gleam run"
     },
     "events": {
-        "start": "caddy reverse-proxy   --from :5137 --to :3000 |  npm run  --prefix lustre  -- dev    --host"
+        "start": "npm run  --prefix lustre  -- dev    --host"
     }
 }
