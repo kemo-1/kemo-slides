@@ -102,7 +102,7 @@ fn handle_message(
                           "database/db.ets",
                           True,
                           True,
-                          True,
+                          False,
                         )
                       {
                         Ok(_) ->

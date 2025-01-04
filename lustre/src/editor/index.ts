@@ -8,12 +8,20 @@ import { fromUint8Array, toUint8Array } from 'js-base64'
 import * as awarenessProtocol from 'y-protocols/awareness.js'
 import { Markdown } from 'tiptap-markdown'
 import './styles.css'
+
 const COLORS = ["#ffa5a5", "#f9ffa5", "#a9ffa5", "#a5e8ff", "#dfa5ff"]
 const NAMES = ["Kemo", "David", "Steven", "Mike", "Kyle"]
 
 const myColor = COLORS[Math.floor(Math.random() * COLORS.length)]
 const myName = NAMES[Math.floor(Math.random() * NAMES.length)]
+
 export class CollaborativeEditor extends HTMLElement {
+    editor: Editor
+
+    static get observedAttributes() {
+        return ['document-name', 'server-url']
+    }
+
     constructor() {
         super()
         const style = document.createElement('style')
@@ -63,6 +71,25 @@ export class CollaborativeEditor extends HTMLElement {
         document.head.appendChild(style)
     }
 
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (oldValue !== newValue && this.isConnected) {
+            // Create a new instance with the same attributes
+            const replacement = document.createElement('collaborative-editor') as CollaborativeEditor
+            // Copy all current attributes to the new instance
+            Array.from(this.attributes).forEach(attr => {
+                replacement.setAttribute(attr.name, attr.value)
+            })
+            // Replace this instance with the new one
+            this.parentNode?.replaceChild(replacement, this)
+        }
+    }
+
+    disconnectedCallback() {
+        if (this.editor) {
+            this.editor.destroy()
+        }
+    }
+
     connectedCallback() {
         const editorDiv = document.createElement('div')
         editorDiv.className = 'editor'
@@ -81,15 +108,14 @@ export class CollaborativeEditor extends HTMLElement {
         this.initializeEditor(yDoc, provider, editorDiv)
     }
 
-    initializeConnections(yDoc, provider, documentName, serverUrl) {
+    initializeConnections(yDoc: Y.Doc, provider: IndexeddbPersistence, documentName: string, serverUrl: string) {
         const docSocket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
-        // const awarenessSocket = new WebSocket(`ws://${serverUrl}/api/awareness`)
 
         this.setupWebSocketHandlers(docSocket, yDoc, provider)
         this.setupUpdateListeners(yDoc, provider, docSocket)
     }
 
-    setupWebSocketHandlers(docSocket, yDoc, provider) {
+    setupWebSocketHandlers(docSocket: WebSocket, yDoc: Y.Doc, provider: IndexeddbPersistence) {
         docSocket.onmessage = (event) => {
             let json = JSON.parse(event.data)
             let doc = json.doc
@@ -103,16 +129,10 @@ export class CollaborativeEditor extends HTMLElement {
                 const binaryEncoded = toUint8Array(awareness)
                 awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
             }
-
         }
-
-        // awarenessSocket.onmessage = (event) => {
-        //     const binaryEncoded = toUint8Array(event.data)
-        //     awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
-        // }
     }
 
-    setupUpdateListeners(yDoc, provider, docSocket) {
+    setupUpdateListeners(yDoc: Y.Doc, provider: IndexeddbPersistence, docSocket: WebSocket) {
         yDoc.on('update', () => {
             const documentState = Y.encodeStateAsUpdate(yDoc)
             const binaryEncoded = fromUint8Array(documentState)
@@ -125,8 +145,6 @@ export class CollaborativeEditor extends HTMLElement {
         })
 
         provider.awareness.on('update', ({ added, updated, removed }) => {
-
-
             if (docSocket.readyState === WebSocket.OPEN) {
                 const changedClients = added.concat(updated).concat(removed)
                 const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
@@ -139,10 +157,8 @@ export class CollaborativeEditor extends HTMLElement {
         })
     }
 
-    initializeEditor(yDoc, provider, editorDiv) {
-
-
-        new Editor({
+    initializeEditor(yDoc: Y.Doc, provider: IndexeddbPersistence, editorDiv: HTMLElement) {
+        this.editor = new Editor({
             element: editorDiv,
             extensions: [
                 StarterKit.configure({

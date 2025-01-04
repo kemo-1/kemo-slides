@@ -3,60 +3,104 @@ import lustre
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-import lustre/event
+
+// import lustre/element/html
+// import lustre/event
+import gleam/uri.{type Uri}
+import lustre/effect.{type Effect}
+import lustre/ui/divider.{divider, margin}
+import modem
 
 // MAIN ------------------------------------------------------------------------
+pub type Route {
+  Wibble
+  Wobble
+}
 
 pub fn main() {
-  let app = lustre.simple(init, update, view)
-  let assert Ok(_) = lustre.start(app, "#app", 0)
+  let app = lustre.application(init, update, view)
+  let assert Ok(_) = lustre.start(app, "#app", Wibble)
 
   Nil
 }
 
 // MODEL -----------------------------------------------------------------------
 
-type Model =
-  Int
+fn init(route) -> #(Route, Effect(Msg)) {
+  #(route, modem.init(on_url_change))
+}
 
-fn init(initial_count: Int) -> Model {
-  case initial_count < 0 {
-    True -> 0
-    False -> initial_count
+fn on_url_change(uri: Uri) -> Msg {
+  case uri.path_segments(uri.path) {
+    ["wibble"] -> OnRouteChange(Wibble)
+    ["wobble"] -> OnRouteChange(Wobble)
+    _ -> OnRouteChange(Wibble)
   }
 }
 
-// UPDATE ----------------------------------------------------------------------
-
-pub opaque type Msg {
-  Incr
-  Decr
+pub type Msg {
+  OnRouteChange(Route)
 }
 
-fn update(model: Model, msg: Msg) -> Model {
+fn update(_, msg: Msg) -> #(Route, Effect(Msg)) {
   case msg {
-    Incr -> model + 1
-    Decr -> model - 1
+    OnRouteChange(route) -> #(route, effect.none())
   }
 }
 
-// VIEW ------------------------------------------------------------------------
-
-fn view(model: Model) -> Element(Msg) {
-  let _styles = [
-    #("width", "100vw"),
-    #("height", "100vh"),
-    #("padding", "1rem"),
-  ]
-  let _count = int.to_string(model)
-
+fn view(route: Route) -> Element(Msg) {
   html.div([], [
-    html.div([], [
-      element.element(
-        "collaborative-editor",
-        [attribute.attribute("document-name", "demo")],
-        [],
-      ),
+    html.nav([], [
+      html.a([attribute.href("/wibble")], [element.text("Go to wibble")]),
+      html.br([]),
+      html.a([attribute.href("/wobble")], [element.text("Go to wobble")]),
     ]),
+    // case route {
+    //   Wibble ->
+    //     element.element(
+    //       "collaborative-editor",
+    //       [attribute.attribute("document-name", "wibble")],
+    //       [],
+    //     )
+
+    //   Wobble ->
+    //     element.element(
+    //       "collaborative-editor",
+    //       [attribute.attribute("document-name", "wobble")],
+    //       [],
+    //     )
+
+    //   NotFound -> html.h1([], [element.text("You're on wobble")])
+    // },
+    element.element(
+      "collaborative-editor",
+      [
+        attribute.attribute("document-name", case route {
+          Wibble -> "wibble"
+          Wobble -> "wobble"
+        }),
+      ],
+      [],
+    ),
   ])
 }
+// VIEW ------------------------------------------------------------------------
+
+// fn view(model: Model) -> Element(Msg) {
+//   let _styles = [
+//     #("width", "100vw"),
+//     #("height", "100vh"),
+//     #("padding", "1rem"),
+//   ]
+//   let _count = int.to_string(model)
+
+//   divider([], [
+//     divider([], [
+//       element.element(
+//         "collaborative-editor",
+//         [attribute.attribute("document-name", "demo")],
+//         [],
+//       ),
+//     ]),
+//   ])
+// }
