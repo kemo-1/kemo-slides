@@ -96,7 +96,7 @@ fn handle_message(
                     Error(err) -> {
                       io.debug(err)
                       io.println(
-                        "document couldn't be saved to file sucessfully because ^^^ ",
+                        "document couldn't be saved to file sucessfully because ^^^",
                       )
                     }
                   }

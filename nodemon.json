@@ -7,7 +7,5 @@
     "execMap": {
         "gleam": "gleam run"
     },
-    "events": {
-        "start": "npm run  --prefix lustre  -- dev -l 'error'    --host"
-    }
+    "exec": "npm run  --prefix lustre  -- dev     --host | gleam run"
 }
