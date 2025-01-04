@@ -36,13 +36,7 @@ pub fn main() {
     mist.new(fn(request) {
       let response = case request.path_segments(request) {
         ["api", x] -> {
-          case x {
-            "doc" ->
-              websocket.start(request, pubsub, Ydoc(x), Some(table)) |> Ok
-            "awareness" -> websocket.start(request, pubsub, Ydoc(x), None) |> Ok
-
-            _ -> new_response(404, "Not found") |> Ok
-          }
+          websocket.start(request, pubsub, Ydoc(x), table) |> Ok
         }
 
         _ -> {

@@ -81,41 +81,58 @@ export class CollaborativeEditor extends HTMLElement {
 
     initializeConnections(yDoc, provider, documentName, serverUrl) {
         const docSocket = new WebSocket(`ws://${serverUrl}/api/doc`)
-        const awarenessSocket = new WebSocket(`ws://${serverUrl}/api/awareness`)
+        // const awarenessSocket = new WebSocket(`ws://${serverUrl}/api/awareness`)
 
-        this.setupWebSocketHandlers(docSocket, awarenessSocket, yDoc, provider)
-        this.setupUpdateListeners(yDoc, provider, docSocket, awarenessSocket)
+        this.setupWebSocketHandlers(docSocket, yDoc, provider)
+        this.setupUpdateListeners(yDoc, provider, docSocket)
     }
 
-    setupWebSocketHandlers(docSocket, awarenessSocket, yDoc, provider) {
+    setupWebSocketHandlers(docSocket, yDoc, provider) {
         docSocket.onmessage = (event) => {
-            const binaryEncoded = toUint8Array(event.data)
-            Y.applyUpdate(yDoc, binaryEncoded)
+            let json = JSON.parse(event.data)
+            let doc = json.doc
+            let awareness = json.awareness
+
+            if (doc !== undefined) {
+                const binaryEncoded = toUint8Array(doc)
+                Y.applyUpdate(yDoc, binaryEncoded)
+            }
+            if (awareness !== undefined) {
+                const binaryEncoded = toUint8Array(awareness)
+                awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
+            }
+
         }
 
-        awarenessSocket.onmessage = (event) => {
-            const binaryEncoded = toUint8Array(event.data)
-            awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
-        }
+        // awarenessSocket.onmessage = (event) => {
+        //     const binaryEncoded = toUint8Array(event.data)
+        //     awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
+        // }
     }
 
-    setupUpdateListeners(yDoc, provider, docSocket, awarenessSocket) {
+    setupUpdateListeners(yDoc, provider, docSocket) {
         yDoc.on('update', () => {
             const documentState = Y.encodeStateAsUpdate(yDoc)
             const binaryEncoded = fromUint8Array(documentState)
 
             if (docSocket.readyState === WebSocket.OPEN) {
-                docSocket.send(binaryEncoded)
+                let doc = { doc: binaryEncoded }
+                let json = JSON.stringify(doc)
+                docSocket.send(json)
             }
         })
 
         provider.awareness.on('update', ({ added, updated, removed }) => {
-            const changedClients = added.concat(updated).concat(removed)
-            const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
-            const binaryEncoded = fromUint8Array(documentAwareness)
 
-            if (awarenessSocket.readyState === WebSocket.OPEN) {
-                awarenessSocket.send(binaryEncoded)
+
+            if (docSocket.readyState === WebSocket.OPEN) {
+                const changedClients = added.concat(updated).concat(removed)
+                const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
+                const binaryEncoded = fromUint8Array(documentAwareness)
+
+                let awareness = { awareness: binaryEncoded }
+                let json = JSON.stringify(awareness)
+                docSocket.send(json)
             }
         })
     }

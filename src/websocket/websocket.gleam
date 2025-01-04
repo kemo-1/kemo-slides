@@ -1,6 +1,8 @@
 import bravo/uset.{type USet}
 import chip
+import gleam/dynamic/decode
 import gleam/erlang/process.{type Subject, Normal}
+import gleam/json
 
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
@@ -16,7 +18,7 @@ import websocket/pubsub.{type Channel, publish, subscribe}
 
 pub type CustomWebsocketMessage {
   Connect(user_subject: Subject(CustomWebsocketMessage))
-  SendToAll(message: String)
+  SendToAll(message: String, save_to_db: Bool)
   Disconnect
 }
 
@@ -28,7 +30,7 @@ pub opaque type WebsocketActorState {
   WebsocketActorState(
     pubsub: Subject(chip.Message(CustomWebsocketMessage, Channel)),
     channel: Channel,
-    table: Option(USet(String, String)),
+    table: USet(String, String),
   )
 }
 
@@ -36,7 +38,7 @@ pub fn start(
   req: Request(Connection),
   pubsub: Subject(chip.Message(CustomWebsocketMessage, Channel)),
   channel: Channel,
-  table: Option(USet(String, String)),
+  table: USet(String, String),
 ) -> Response(ResponseData) {
   mist.websocket(
     request: req,
@@ -49,22 +51,17 @@ pub fn start(
       subscribe(pubsub, channel, ws_subject)
       let state = WebsocketActorState(pubsub:, channel: channel, table: table)
 
-      case table {
-        Some(doc_table) -> {
-          case uset.lookup(doc_table, "doc") {
-            Error(err) -> {
-              io.debug(err)
-              io.println_error(
-                "Error:  document couldn't be found making a new doc",
-              )
-            }
-            Ok(doc_value) -> {
-              // let #(_, value) = doc_value
-              send_client_text(connection, doc_value)
-            }
-          }
+      case uset.lookup(table, "doc") {
+        Error(err) -> {
+          io.debug(err)
+          io.println_error(
+            "Error:  document couldn't be found making a new doc",
+          )
         }
-        None -> Nil
+        Ok(doc_value) -> {
+          // let #(_, value) = doc_value
+          send_client_text(connection, doc_value)
+        }
       }
 
       #(state, Some(new_selector))
@@ -85,13 +82,19 @@ fn handle_message(
         Connect(_subject) -> {
           actor.continue(state)
         }
-        SendToAll(message) -> {
-          case state.table {
-            Some(table) -> {
-              case uset.insert(table, "doc", message) {
+        SendToAll(message, save_to_db) -> {
+          case save_to_db {
+            True -> {
+              case uset.insert(state.table, "doc", message) {
                 Ok(_) -> {
                   case
-                    uset.tab2file(table, "database/db.ets", True, True, True)
+                    uset.tab2file(
+                      state.table,
+                      "database/db.ets",
+                      True,
+                      True,
+                      True,
+                    )
                   {
                     Ok(_) ->
                       io.println("document has been saved to file sucessfully")
@@ -114,14 +117,11 @@ fn handle_message(
                 }
               }
             }
-            None -> {
+            False -> {
               send_client_text(connection, message)
               actor.continue(state)
             }
           }
-
-          send_client_text(connection, message)
-          actor.continue(state)
         }
         Disconnect -> {
           Stop(Normal)
@@ -129,7 +129,19 @@ fn handle_message(
       }
 
     Text(value) -> {
-      publish(state.pubsub, state.channel, SendToAll(value))
+      let doc_decoder = {
+        use name <- decode.field("doc", decode.string)
+        decode.success(name)
+      }
+
+      case json.parse(from: value, using: doc_decoder) {
+        Ok(doc) -> {
+          let json = json.to_string(json.object([#("doc", json.string(doc))]))
+          publish(state.pubsub, state.channel, SendToAll(json, True))
+        }
+        Error(_) ->
+          publish(state.pubsub, state.channel, SendToAll(value, False))
+      }
       actor.continue(state)
     }
     _ -> {
