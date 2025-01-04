@@ -13,13 +13,13 @@ import modem
 
 // MAIN ------------------------------------------------------------------------
 pub type Route {
-  Wibble
-  Wobble
+  Note1
+  Note2
 }
 
 pub fn main() {
   let app = lustre.application(init, update, view)
-  let assert Ok(_) = lustre.start(app, "#app", Wibble)
+  let assert Ok(_) = lustre.start(app, "#app", Note1)
 
   Nil
 }
@@ -32,9 +32,9 @@ fn init(route) -> #(Route, Effect(Msg)) {
 
 fn on_url_change(uri: Uri) -> Msg {
   case uri.path_segments(uri.path) {
-    ["wibble"] -> OnRouteChange(Wibble)
-    ["wobble"] -> OnRouteChange(Wobble)
-    _ -> OnRouteChange(Wibble)
+    ["note_1"] -> OnRouteChange(Note1)
+    ["note_2"] -> OnRouteChange(Note2)
+    _ -> OnRouteChange(Note1)
   }
 }
 
@@ -51,33 +51,33 @@ fn update(_, msg: Msg) -> #(Route, Effect(Msg)) {
 fn view(route: Route) -> Element(Msg) {
   html.div([], [
     html.nav([], [
-      html.a([attribute.href("/wibble")], [element.text("Go to wibble")]),
+      html.a([attribute.href("/note_1")], [element.text("Go to note 1")]),
       html.br([]),
-      html.a([attribute.href("/wobble")], [element.text("Go to wobble")]),
+      html.a([attribute.href("/note_2")], [element.text("Go to note_2")]),
     ]),
     // case route {
-    //   Wibble ->
+    //   Note1 ->
     //     element.element(
     //       "collaborative-editor",
-    //       [attribute.attribute("document-name", "wibble")],
+    //       [attribute.attribute("document-name", "Note1")],
     //       [],
     //     )
 
-    //   Wobble ->
+    //   Note2 ->
     //     element.element(
     //       "collaborative-editor",
-    //       [attribute.attribute("document-name", "wobble")],
+    //       [attribute.attribute("document-name", "Note2")],
     //       [],
     //     )
 
-    //   NotFound -> html.h1([], [element.text("You're on wobble")])
+    //   NotFound -> html.h1([], [element.text("You're on Note2")])
     // },
     element.element(
       "collaborative-editor",
       [
         attribute.attribute("document-name", case route {
-          Wibble -> "wibble"
-          Wobble -> "wobble"
+          Note1 -> "note_1"
+          Note2 -> "note_2"
         }),
       ],
       [],

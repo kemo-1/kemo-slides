@@ -105,24 +105,27 @@ fn handle_message(
                           False,
                         )
                       {
-                        Ok(_) ->
-                          io.println(
-                            "document has been saved to file sucessfully",
-                          )
-                        Error(err) -> {
-                          io.debug(err)
-                          io.println(
-                            "document couldn't be saved to file sucessfully because ^^^",
-                          )
+                        Ok(_) -> {
+                          // io.println(
+                          //   "document has been saved to file sucessfully",
+                          // )
+                          Nil
+                        }
+                        Error(_err) -> {
+                          // io.debug(err)
+                          // io.println(
+                          //   "document couldn't be saved to file sucessfully because ^^^",
+                          // )
+                          Nil
                         }
                       }
-                      io.println("document has been saved in memory")
+                      // io.println("document has been saved in memory")
                       send_client_text(connection, message)
                       actor.continue(state)
                     }
-                    Error(err) -> {
-                      io.debug(err)
-                      io.println("document couldn't be insert to database")
+                    Error(_err) -> {
+                      // io.debug(err)
+                      // io.println("document couldn't be insert to database")
                       send_client_text(connection, message)
 
                       actor.continue(state)
