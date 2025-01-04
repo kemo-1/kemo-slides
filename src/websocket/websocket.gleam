@@ -51,7 +51,7 @@ pub fn start(
 
       subscribe(pubsub, channel, ws_subject)
 
-      let state = WebsocketActorState(pubsub:, channel: channel, table: table)
+      let state = WebsocketActorState(pubsub:, channel:, table:)
 
       case channel {
         pubsub.Ydoc(document_name) -> {
@@ -144,24 +144,18 @@ fn handle_message(
       }
 
     Text(message) -> {
-      case state.channel {
-        pubsub.Ydoc(document_name) -> {
-          let doc_decoder = {
-            use name <- decode.field("doc", decode.string)
-            decode.success(name)
-          }
+      let doc_decoder = {
+        use name <- decode.field("doc", decode.string)
+        decode.success(name)
+      }
 
-          case json.parse(from: message, using: doc_decoder) {
-            Ok(doc) -> {
-              let json =
-                json.to_string(json.object([#("doc", json.string(doc))]))
-              publish(state.pubsub, state.channel, SendToAll(json, True))
-            }
-            Error(_) ->
-              publish(state.pubsub, state.channel, SendToAll(message, False))
-          }
+      case json.parse(from: message, using: doc_decoder) {
+        Ok(doc) -> {
+          let json = json.to_string(json.object([#("doc", json.string(doc))]))
+          publish(state.pubsub, state.channel, SendToAll(json, True))
         }
-        _ -> panic
+        Error(_) ->
+          publish(state.pubsub, state.channel, SendToAll(message, False))
       }
 
       actor.continue(state)
