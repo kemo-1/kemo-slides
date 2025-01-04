@@ -1,15 +1,13 @@
 {
     "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/nodemon.json",
     "watch": [
-        "src",
-        "lustre/src"
+        "src"
     ],
-    "ext": "gleam",
     "verbose": false,
     "execMap": {
         "gleam": "gleam run"
     },
     "events": {
-        "start": "npm run  --prefix lustre  -- dev    --host"
+        "start": "npm run  --prefix lustre  -- dev -l 'error'    --host"
     }
 }
