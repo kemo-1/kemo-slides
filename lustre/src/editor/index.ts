@@ -80,8 +80,8 @@ export class CollaborativeEditor extends HTMLElement {
     }
 
     initializeConnections(yDoc, provider, documentName, serverUrl) {
-        const docSocket = new WebSocket(`ws://${serverUrl}/doc`)
-        const awarenessSocket = new WebSocket(`ws://${serverUrl}/awareness`)
+        const docSocket = new WebSocket(`ws://${serverUrl}/api/doc`)
+        const awarenessSocket = new WebSocket(`ws://${serverUrl}/api/awareness`)
 
         this.setupWebSocketHandlers(docSocket, awarenessSocket, yDoc, provider)
         this.setupUpdateListeners(yDoc, provider, docSocket, awarenessSocket)

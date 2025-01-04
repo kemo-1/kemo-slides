@@ -35,12 +35,14 @@ pub fn main() {
   let assert Ok(_) =
     mist.new(fn(request) {
       let response = case request.path_segments(request) {
-        ["doc"] -> {
-          Ok(websocket.start(request, pubsub, Doc, Some(table)))
+        ["api", x] -> {
+          case x {
+            "doc" -> Ok(websocket.start(request, pubsub, Doc, Some(table)))
+            "awareness" -> Ok(websocket.start(request, pubsub, Awareness, None))
+            _ -> new_response(404, "Not found") |> Ok
+          }
         }
-        ["awareness"] -> {
-          Ok(websocket.start(request, pubsub, Awareness, None))
-        }
+
         _ -> {
           new_response(404, "Not found") |> Ok
         }

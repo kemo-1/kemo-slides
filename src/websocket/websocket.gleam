@@ -54,7 +54,9 @@ pub fn start(
           case uset.lookup(doc_table, "doc") {
             Error(err) -> {
               io.debug(err)
-              io.println_error("Error:  document couldn't be found")
+              io.println_error(
+                "Error:  document couldn't be found making a new doc",
+              )
             }
             Ok(doc_value) -> {
               // let #(_, value) = doc_value
