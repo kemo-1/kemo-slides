@@ -11,6 +11,8 @@ import './styles.css'
 const COLORS = ["#ffa5a5", "#f9ffa5", "#a9ffa5", "#a5e8ff", "#dfa5ff"]
 const NAMES = ["Kemo", "David", "Steven", "Mike", "Kyle"]
 
+const myColor = COLORS[Math.floor(Math.random() * COLORS.length)]
+const myName = NAMES[Math.floor(Math.random() * NAMES.length)]
 export class CollaborativeEditor extends HTMLElement {
     constructor() {
         super()
@@ -80,7 +82,7 @@ export class CollaborativeEditor extends HTMLElement {
     }
 
     initializeConnections(yDoc, provider, documentName, serverUrl) {
-        const docSocket = new WebSocket(`ws://${serverUrl}/api/doc`)
+        const docSocket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
         // const awarenessSocket = new WebSocket(`ws://${serverUrl}/api/awareness`)
 
         this.setupWebSocketHandlers(docSocket, yDoc, provider)
@@ -138,8 +140,7 @@ export class CollaborativeEditor extends HTMLElement {
     }
 
     initializeEditor(yDoc, provider, editorDiv) {
-        const myColor = COLORS[Math.floor(Math.random() * COLORS.length)]
-        const myName = NAMES[Math.floor(Math.random() * NAMES.length)]
+
 
         new Editor({
             element: editorDiv,

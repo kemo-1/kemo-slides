@@ -17,25 +17,25 @@ fn new_response(status: Int, body: String) {
 }
 
 pub fn main() {
-  let table = case
-    uset.file2tab(
-      "database/db.ets",
-      True,
-      fn(table) { table |> dynamic.string },
-      fn(table) { table |> dynamic.string },
-    )
-  {
-    Ok(table) -> table
-    Error(_) -> {
-      let assert Ok(table) = uset.new("doc", bravo.Public)
-      table
-    }
-  }
-  let assert Ok(pubsub) = pubsub.start()
   let assert Ok(_) =
     mist.new(fn(request) {
       let response = case request.path_segments(request) {
         ["api", x] -> {
+          let table = case
+            uset.file2tab(
+              "database/db.ets",
+              True,
+              fn(table) { table |> dynamic.string },
+              fn(table) { table |> dynamic.string },
+            )
+          {
+            Ok(table) -> table
+            Error(_) -> {
+              let assert Ok(table) = uset.new(x, bravo.Public)
+              table
+            }
+          }
+          let assert Ok(pubsub) = pubsub.start()
           websocket.start(request, pubsub, Ydoc(x), table) |> Ok
         }
 

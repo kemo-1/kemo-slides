@@ -48,20 +48,27 @@ pub fn start(
       let new_selector =
         process.new_selector()
         |> process.selecting(ws_subject, fn(x) { x })
+
       subscribe(pubsub, channel, ws_subject)
+
       let state = WebsocketActorState(pubsub:, channel: channel, table: table)
 
-      case uset.lookup(table, "doc") {
-        Error(err) -> {
-          io.debug(err)
-          io.println_error(
-            "Error:  document couldn't be found making a new doc",
-          )
+      case channel {
+        pubsub.Ydoc(document_name) -> {
+          case uset.lookup(table, document_name) {
+            Error(err) -> {
+              io.debug(err)
+              io.println_error(
+                "Error:  document couldn't be found making a new doc",
+              )
+            }
+            Ok(doc_value) -> {
+              // let #(_, value) = doc_value
+              send_client_text(connection, doc_value)
+            }
+          }
         }
-        Ok(doc_value) -> {
-          // let #(_, value) = doc_value
-          send_client_text(connection, doc_value)
-        }
+        _ -> panic
       }
 
       #(state, Some(new_selector))
@@ -85,36 +92,44 @@ fn handle_message(
         SendToAll(message, save_to_db) -> {
           case save_to_db {
             True -> {
-              case uset.insert(state.table, "doc", message) {
-                Ok(_) -> {
-                  case
-                    uset.tab2file(
-                      state.table,
-                      "database/db.ets",
-                      True,
-                      True,
-                      True,
-                    )
-                  {
-                    Ok(_) ->
-                      io.println("document has been saved to file sucessfully")
+              case state.channel {
+                pubsub.Ydoc(document_name) -> {
+                  case uset.insert(state.table, document_name, message) {
+                    Ok(_) -> {
+                      case
+                        uset.tab2file(
+                          state.table,
+                          "database/db.ets",
+                          True,
+                          True,
+                          True,
+                        )
+                      {
+                        Ok(_) ->
+                          io.println(
+                            "document has been saved to file sucessfully",
+                          )
+                        Error(err) -> {
+                          io.debug(err)
+                          io.println(
+                            "document couldn't be saved to file sucessfully because ^^^",
+                          )
+                        }
+                      }
+                      io.println("document has been saved in memory")
+                      send_client_text(connection, message)
+                      actor.continue(state)
+                    }
                     Error(err) -> {
                       io.debug(err)
-                      io.println(
-                        "document couldn't be saved to file sucessfully because ^^^",
-                      )
+                      io.println("document couldn't be insert to database")
+                      send_client_text(connection, message)
+
+                      actor.continue(state)
                     }
                   }
-                  io.println("document has been saved in memory")
-                  send_client_text(connection, message)
-                  actor.continue(state)
                 }
-                Error(err) -> {
-                  io.debug(err)
-                  io.println("document couldn't be saved to file")
-
-                  actor.continue(state)
-                }
+                _ -> panic
               }
             }
             False -> {
@@ -128,20 +143,27 @@ fn handle_message(
         }
       }
 
-    Text(value) -> {
-      let doc_decoder = {
-        use name <- decode.field("doc", decode.string)
-        decode.success(name)
+    Text(message) -> {
+      case state.channel {
+        pubsub.Ydoc(document_name) -> {
+          let doc_decoder = {
+            use name <- decode.field("doc", decode.string)
+            decode.success(name)
+          }
+
+          case json.parse(from: message, using: doc_decoder) {
+            Ok(doc) -> {
+              let json =
+                json.to_string(json.object([#("doc", json.string(doc))]))
+              publish(state.pubsub, state.channel, SendToAll(json, True))
+            }
+            Error(_) ->
+              publish(state.pubsub, state.channel, SendToAll(message, False))
+          }
+        }
+        _ -> panic
       }
 
-      case json.parse(from: value, using: doc_decoder) {
-        Ok(doc) -> {
-          let json = json.to_string(json.object([#("doc", json.string(doc))]))
-          publish(state.pubsub, state.channel, SendToAll(json, True))
-        }
-        Error(_) ->
-          publish(state.pubsub, state.channel, SendToAll(value, False))
-      }
       actor.continue(state)
     }
     _ -> {

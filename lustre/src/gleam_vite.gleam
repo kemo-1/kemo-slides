@@ -54,7 +54,7 @@ fn view(model: Model) -> Element(Msg) {
     html.div([], [
       element.element(
         "collaborative-editor",
-        [attribute.attribute("document_name", "demo")],
+        [attribute.attribute("document-name", "demo2")],
         [],
       ),
     ]),
