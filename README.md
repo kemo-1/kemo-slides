@@ -7,6 +7,8 @@
 run the server and the client with `nodemon src/beam_party.gleam`
 Then the client will be on localhost:5173 
 
+or run `gleam run` then open a new terminal window `cd lustre` then `npm run dev`
+
 i really enjoyed using partykit which is a JavaScript library for building websocket servers that make it too ez to make collaborative apps and websites
 [PartyKit](https://www.partykit.io/) 
 
