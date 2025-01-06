@@ -13,13 +13,20 @@ import modem
 
 // MAIN ------------------------------------------------------------------------
 pub type Route {
-  Note1
-  Note2
+  Url(String)
+}
+
+fn on_url_change(uri: Uri) -> Msg {
+  case uri.path_segments(uri.path) {
+    [x] -> OnRouteChange(Url(x))
+    // ["note_2"] -> OnRouteChange(Note2)
+    _ -> OnRouteChange(Url(""))
+  }
 }
 
 pub fn main() {
   let app = lustre.application(init, update, view)
-  let assert Ok(_) = lustre.start(app, "#app", Note1)
+  let assert Ok(_) = lustre.start(app, "#app", Url(""))
 
   Nil
 }
@@ -28,14 +35,6 @@ pub fn main() {
 
 fn init(route) -> #(Route, Effect(Msg)) {
   #(route, modem.init(on_url_change))
-}
-
-fn on_url_change(uri: Uri) -> Msg {
-  case uri.path_segments(uri.path) {
-    ["note_1"] -> OnRouteChange(Note1)
-    ["note_2"] -> OnRouteChange(Note2)
-    _ -> OnRouteChange(Note1)
-  }
 }
 
 pub type Msg {
@@ -55,33 +54,15 @@ fn view(route: Route) -> Element(Msg) {
       html.br([]),
       html.a([attribute.href("/note_2")], [element.text("Go to note_2")]),
     ]),
-    // case route {
-    //   Note1 ->
-    //     element.element(
-    //       "collaborative-editor",
-    //       [attribute.attribute("document-name", "Note1")],
-    //       [],
-    //     )
-
-    //   Note2 ->
-    //     element.element(
-    //       "collaborative-editor",
-    //       [attribute.attribute("document-name", "Note2")],
-    //       [],
-    //     )
-
-    //   NotFound -> html.h1([], [element.text("You're on Note2")])
-    // },
-    element.element(
-      "collaborative-editor",
-      [
-        attribute.attribute("document-name", case route {
-          Note1 -> "note_1"
-          Note2 -> "note_2"
-        }),
-      ],
-      [],
-    ),
+    case route {
+      Url(document_name) -> {
+        element.element(
+          "collaborative-editor",
+          [attribute.attribute("document-name", document_name)],
+          [],
+        )
+      }
+    },
   ])
 }
 // VIEW ------------------------------------------------------------------------

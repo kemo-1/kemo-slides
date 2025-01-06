@@ -127,6 +127,7 @@ export class CollaborativeEditor extends HTMLElement {
             }
             if (awareness !== undefined) {
                 const binaryEncoded = toUint8Array(awareness)
+                //@ts-ignore
                 awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
             }
         }
@@ -143,10 +144,11 @@ export class CollaborativeEditor extends HTMLElement {
                 docSocket.send(json)
             }
         })
-
+        //@ts-ignore
         provider.awareness.on('update', ({ added, updated, removed }) => {
             if (docSocket.readyState === WebSocket.OPEN) {
                 const changedClients = added.concat(updated).concat(removed)
+                //@ts-ignore
                 const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
                 const binaryEncoded = fromUint8Array(documentAwareness)
 
