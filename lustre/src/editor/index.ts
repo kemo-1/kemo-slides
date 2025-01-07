@@ -98,7 +98,7 @@ export class CollaborativeEditor extends HTMLElement {
         this.appendChild(editorDiv)
 
         const documentName = this.getAttribute('document-name') || 'default-doc'
-        const serverUrl = this.getAttribute('server-url') || '192.168.8.118:3000'
+        const serverUrl = this.getAttribute('server-url') || 'localhost:3000'
 
         const yDoc = new Y.Doc()
         const awareness = new awarenessProtocol.Awareness(yDoc)

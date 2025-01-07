@@ -10,7 +10,7 @@ if (lorodocument) {
 }
 
 
-const serverUrl = '192.168.8.118:3000'
+const serverUrl = 'localhost:3000'
 const documentName = 'main'
 const socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
 doc.subscribe((update => {

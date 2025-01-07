@@ -5,9 +5,15 @@ import gleam/list
 import gleam/result
 import lustre
 import lustre/attribute
-import lustre/element.{type Element}
-import lustre/element/html
+
+// import sketch/lustre
+import sketch/lustre/element.{type Element}
+import sketch/lustre/element/html
+
+// import lustre/element/html
 import lustre/event
+import sketch
+import sketch/lustre as sketch_lustre
 
 // import lustre/element/html
 // import lustre/event
@@ -62,7 +68,6 @@ fn do_get_notes() {
   })
 }
 
-// MAIN ------------------------------------------------------------------------
 pub type Route {
   Url(String)
 }
@@ -70,17 +75,17 @@ pub type Route {
 fn on_url_change(uri: Uri) -> Msg {
   case uri.path_segments(uri.path) {
     [x] -> OnRouteChange(Url(x))
-    // ["note_2"] -> OnRouteChange(Note2)
     _ -> OnRouteChange(Url(""))
   }
 }
 
 pub fn main() {
-  let app = lustre.application(init, update, view)
-  let assert Ok(_) =
-    lustre.start(app, "#app", Model(route: Url(""), note_name: "", notes: []))
+  let assert Ok(cache) = sketch.cache(strategy: sketch.Ephemeral)
 
-  Nil
+  sketch_lustre.node()
+  |> sketch_lustre.compose(view, cache)
+  |> lustre.application(init, update, _)
+  |> lustre.start("#app", Model(route: Url(""), note_name: "", notes: []))
 }
 
 // MODEL -----------------------------------------------------------------------
@@ -123,36 +128,35 @@ fn update(model: Model, msg: Msg) -> #(Model, Effect(Msg)) {
   }
 }
 
-fn view(model: Model) -> Element(Msg) {
+fn view(model: Model) {
   let content_updated = fn(event) -> Result(Msg, List(dynamic.DecodeError)) {
     use detail <- result.try(dynamic.field("detail", dynamic.dynamic)(event))
     use notes <- result.try(dynamic.field("notes", dynamic.list(dynamic.string))(
       detail,
     ))
-
     io.debug("notes")
-
     Ok(NotesChanged(notes))
   }
 
-  html.div([], case model.route {
+  html.div(sketch.class([]), [], case model.route {
     Url(document_name) -> {
       case document_name {
         "" -> {
           [
             html.div(
+              sketch.class([]),
               [
                 attribute.id("notes-container"),
                 event.on("content-update", content_updated),
               ],
               [
-                html.input([
+                html.input(sketch.class([]), [
                   attribute.type_("text"),
                   attribute.value(model.note_name),
                   event.on_input(InputChanged),
                   attribute.style([#("color", "black")]),
                 ]),
-                html.button([event.on_click(AddNote)], [
+                html.button(sketch.class([]), [event.on_click(AddNote)], [
                   html.text("add a new note"),
                 ]),
               ],
@@ -160,13 +164,17 @@ fn view(model: Model) -> Element(Msg) {
             element.fragment(
               model.notes
               |> list.index_map(fn(note, index) {
-                html.div([], [
-                  html.button([event.on_click(DeleteNote(index))], [
-                    html.text("x"),
-                  ]),
-                  html.button([event.on_click(OnRouteChange(Url(note)))], [
-                    html.text(note),
-                  ]),
+                html.div(sketch.class([]), [], [
+                  html.button(
+                    sketch.class([]),
+                    [event.on_click(DeleteNote(index))],
+                    [html.text("x")],
+                  ),
+                  html.button(
+                    sketch.class([]),
+                    [event.on_click(OnRouteChange(Url(note)))],
+                    [html.text(note)],
+                  ),
                 ])
               }),
             ),
@@ -176,6 +184,7 @@ fn view(model: Model) -> Element(Msg) {
           [
             element.element(
               "collaborative-editor",
+              sketch.class([]),
               [attribute.attribute("document-name", document_name)],
               [],
             ),
@@ -185,23 +194,3 @@ fn view(model: Model) -> Element(Msg) {
     }
   })
 }
-// VIEW ------------------------------------------------------------------------
-
-// fn view(model: Model) -> Element(Msg) {
-//   let _styles = [
-//     #("width", "100vw"),
-//     #("height", "100vh"),
-//     #("padding", "1rem"),
-//   ]
-//   let _count = int.to_string(model)
-
-//   divider([], [
-//     divider([], [
-//       element.element(
-//         "collaborative-editor",
-//         [attribute.attribute("document-name", "demo")],
-//         [],
-//       ),
-//     ]),
-//   ])
-// }
