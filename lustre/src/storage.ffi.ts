@@ -11,7 +11,7 @@ if (lorodocument) {
 
 
 const serverUrl = 'localhost:8000'
-const documentName = 'main'
+const documentName = ''
 const socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
 doc.subscribe((update => {
 
@@ -63,11 +63,13 @@ socket.onmessage = (event) => {
 const movableList = doc.getMovableList("notes");
 
 export function insert_note(word: string) {
-    word.replaceAll(/\/\//g, "/")
+    // word.replaceAll(/\/\//g, "/")   
+    let document_json = doc.toJSON()
+
+
     movableList.insert(0, word)
 
 
-    let document = doc.toJSON()
     let bytes = doc.export({ mode: "snapshot" })
     let string = fromUint8Array(bytes)
 
@@ -84,15 +86,20 @@ export function insert_note(word: string) {
     }
 
 
-    return document.notes
+
+
+
+
+    return document_json.notes
 }
 
 export function delete_note(index: number) {
 
+    let document_json = doc.toJSON()
+
     movableList.delete(index, 1)
 
 
-    let document = doc.toJSON()
     let bytes = doc.export({ mode: "snapshot" })
     let string = fromUint8Array(bytes)
     localStorage.setItem('loro', string)
@@ -109,7 +116,7 @@ export function delete_note(index: number) {
     }
 
 
-    return document.notes
+    return document_json.notes
 }
 
 export function get_notes() {
