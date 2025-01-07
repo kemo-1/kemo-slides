@@ -8,10 +8,13 @@
     "@tiptap/extension-collaboration-cursor": "^2.11.0",
     "@tiptap/starter-kit": "^2.11.0",
     "js-base64": "^3.7.7",
+    "loro-crdt": "^1.2.7",
     "tiptap": "^0.15.0",
     "tiptap-markdown": "^0.8.10",
     "vite": "^6.0.6",
     "vite-gleam": "^0.4.3",
+    "vite-plugin-top-level-await": "^1.4.4",
+    "vite-plugin-wasm": "^3.4.1",
     "y-indexeddb": "^9.0.12",
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.21"

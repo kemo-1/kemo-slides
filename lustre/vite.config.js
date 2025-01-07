@@ -1,8 +1,15 @@
 import gleam from "vite-gleam";
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default {
+    build: {
+        target: "esnext"
+    },
+    plugins: [
 
-    plugins: [gleam()],
+
+        wasm(), topLevelAwait(), gleam()],
     // server: {
     //     proxy: {
     //         '/doc': {

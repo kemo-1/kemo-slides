@@ -15,6 +15,8 @@ const NAMES = ["Kemo", "David", "Steven", "Mike", "Kyle"]
 const myColor = COLORS[Math.floor(Math.random() * COLORS.length)]
 const myName = NAMES[Math.floor(Math.random() * NAMES.length)]
 
+
+
 export class CollaborativeEditor extends HTMLElement {
     editor: Editor
 
@@ -96,7 +98,7 @@ export class CollaborativeEditor extends HTMLElement {
         this.appendChild(editorDiv)
 
         const documentName = this.getAttribute('document-name') || 'default-doc'
-        const serverUrl = this.getAttribute('server-url') || 'localhost:8000'
+        const serverUrl = this.getAttribute('server-url') || '192.168.8.118:3000'
 
         const yDoc = new Y.Doc()
         const awareness = new awarenessProtocol.Awareness(yDoc)
