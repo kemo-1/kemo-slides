@@ -10,7 +10,7 @@ if (lorodocument) {
 }
 
 
-const serverUrl = 'localhost:3000'
+const serverUrl = 'localhost:8000'
 const documentName = 'main'
 const socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
 doc.subscribe((update => {
@@ -63,6 +63,7 @@ socket.onmessage = (event) => {
 const movableList = doc.getMovableList("notes");
 
 export function insert_note(word: string) {
+    word.replaceAll(/\/\//g, "/")
     movableList.insert(0, word)
 
 

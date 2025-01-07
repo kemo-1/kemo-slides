@@ -134,7 +134,7 @@ fn view(model: Model) {
     use notes <- result.try(dynamic.field("notes", dynamic.list(dynamic.string))(
       detail,
     ))
-    io.debug("notes")
+
     Ok(NotesChanged(notes))
   }
 

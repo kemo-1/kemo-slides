@@ -6,7 +6,9 @@ import gleam/erlang/process
 import gleam/http/request
 import gleam/http/response
 import gleam/io
+import gleam/list
 import gleam/option.{None, Some}
+import gleam/string
 import mist
 import websocket/pubsub.{Awareness, Doc, Ydoc}
 import websocket/websocket
@@ -35,8 +37,21 @@ pub fn main() {
   let assert Ok(_) =
     mist.new(fn(request) {
       let response = case request.path_segments(request) {
-        ["api", x] -> {
-          websocket.start(request, pubsub, Ydoc(x), table) |> Ok
+        ["api", ..] -> {
+          let new_list =
+            request.path_segments(request)
+            |> list.drop(1)
+            |> string.join("/")
+
+          // let channel =
+          //   new_list
+          //   |> list.index_fold("/", fn(start, string, index) {
+          //     string.(start, string)
+          //     // string.append(new_list,string)
+          //   })
+          //   |> Ydoc
+
+          websocket.start(request, pubsub, Ydoc(new_list), table) |> Ok
         }
 
         _ -> {
