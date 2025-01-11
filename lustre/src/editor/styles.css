@@ -1,5 +1,5 @@
 :root {
-    font-size: xx-large;
+    font-size: medium;
     color: rgba(255, 255, 255, 0.87);
     background-color: #15161d;
 
@@ -225,7 +225,7 @@ li[data-slide-v] {
         font-size: 18px;
         font-style: normal;
         font-weight: 600;
-        right: -1px;
+        left: -1px;
         line-height: normal;
         padding: 0.1rem 0.3rem;
         position: absolute;
