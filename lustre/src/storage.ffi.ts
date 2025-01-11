@@ -14,7 +14,7 @@ export function init_connection() {
 
     if (room) {
         let yDoc = new Y.Doc()
-
+        //@ts-ignore
         window.yarray = yDoc.getArray('root')
         let obj = JSON.parse(room)
 
@@ -57,6 +57,7 @@ export function init_connection() {
 
             let event_change = new CustomEvent('content-update', {
                 detail: {
+                    //@ts-ignore
                     notes: window.yarray.toArray()
                 },
 
@@ -107,17 +108,21 @@ export function create_room(name, password) {
     localStorage.setItem("room", string)
 }
 export function insert_note(word: string) {
+    //@ts-ignore
     window.yarray.insert(0, [word])
+    //@ts-ignore
     return window.yarray.toArray()
 }
 
 export function delete_note(index: number) {
+    //@ts-ignore
     window.yarray.delete(index, 1)
-
+    //@ts-ignore
     return window.yarray.toArray()
 }
 
 export function get_notes() {
+    //@ts-ignore
     return window.yarray.toArray()
 }
 
