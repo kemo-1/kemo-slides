@@ -1,8 +1,93 @@
 :root {
     font-size: xx-large;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    background-color: #15161d;
 
+}
+
+
+
+li[data-slide-v="0"] i {
+    visibility: hidden;
+}
+
+li[data-slide-v="0"] .slide-menu-item-title {
+    font-size: xx-large !important;
+    margin-right: 5vw;
+}
+
+li[data-slide-v] {
+    font-size: x-large;
+}
+
+.slide-number {
+    font-size: large !important;
+    color: white !important;
+}
+
+
+/* Webkit-based browsers */
+.slide-menu-panel::-webkit-scrollbar {
+    width: 10px;
+    /* Width of the scrollbar */
+}
+
+.slide-menu-panel::-webkit-scrollbar-thumb {
+    background: #44616e;
+    /* Scrollbar thumb color */
+    border-radius: 5px;
+    /* Rounded corners for the thumb */
+}
+
+.slide-menu-panel::-webkit-scrollbar-thumb:hover {
+    background: #44616e;
+    /* Darker color on hover */
+}
+
+.slide-menu-panel::-webkit-scrollbar-track {
+    border: 1px dotted #bac2ff;
+    /* background: var(--r-heading-color); */
+    /* Scrollbar track color */
+    border-radius: 5px;
+    /* Rounded corners for the track */
+}
+
+
+.slide-menu-wrapper .slide-menu-toolbar>li.active-toolbar-button {
+    color: white;
+    text-shadow: none !important;
+    text-decoration: none !important;
+}
+
+.fas.fa-bars {
+    color: var(--r-heading-color);
+}
+
+.slide-menu {
+    background-color: #15161d !important;
+}
+
+.slide-menu-item-title {
+    color: var(--r-heading-color);
+
+}
+
+.reveal .slide-number {
+    bottom: auto;
+    right: auto;
+    top: 20px;
+    left: 20px;
+    background-color: #15161d;
+}
+
+.slide-menu-wrapper .slide-menu-item,
+.slide-menu-wrapper .slide-menu-item-vertical {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+:-webkit-full-screen .slide-menu-button {
+    display: none;
 }
 
 .name-page {
@@ -72,6 +157,35 @@
     }
 }
 
+.tiptap {
+    padding-right: 5px;
+}
+
+.editor-element::-webkit-scrollbar {
+    width: 10px;
+    /* Width of the scrollbar */
+}
+
+.editor-element::-webkit-scrollbar-thumb {
+    background: #44616e;
+    /* Scrollbar thumb color */
+    border-radius: 5px;
+    /* Rounded corners for the thumb */
+}
+
+.editor-element::-webkit-scrollbar-thumb:hover {
+    background: #44616e;
+    /* Darker color on hover */
+}
+
+.editor-element::-webkit-scrollbar-track {
+    border: 1px dotted #bac2ff;
+    background: var(--r-heading-color);
+    /* Scrollbar track color */
+    border-radius: 5px;
+    /* Rounded corners for the track */
+}
+
 
 /* Basic editor styles */
 .tiptap {
@@ -111,7 +225,7 @@
         font-size: 18px;
         font-style: normal;
         font-weight: 600;
-        left: -1px;
+        right: -1px;
         line-height: normal;
         padding: 0.1rem 0.3rem;
         position: absolute;

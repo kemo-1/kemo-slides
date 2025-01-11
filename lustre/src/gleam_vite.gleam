@@ -5,6 +5,8 @@ import gleam/list
 import gleam/result
 import lustre
 import lustre/attribute
+import sketch/media
+import sketch/size
 
 // import sketch/lustre
 import sketch/lustre/element.{type Element}
@@ -182,15 +184,45 @@ fn view(model: Model) {
         }
         _ -> {
           [
-            element.element(
-              "collaborative-editor",
-              sketch.class([]),
-              [attribute.attribute("document-name", document_name)],
-              [],
-            ),
+            html.div(container(), [attribute.class("editor-container")], [
+              html.div(slides(), [attribute.class("slides-element")], []),
+              element.element(
+                "collaborative-editor",
+                editor(),
+                [
+                  attribute.class("editor-element"),
+                  attribute.attribute("document-name", document_name),
+                ],
+                [],
+              ),
+            ]),
           ]
         }
       }
     }
   })
+}
+
+fn container() {
+  sketch.class([
+    sketch.display("flex"),
+    sketch.height(size.vh(95)),
+    sketch.media(media.max_width(size.px(757)), [
+      sketch.flex_direction("column"),
+    ]),
+  ])
+}
+
+fn slides() {
+  sketch.class([sketch.flex("1")])
+}
+
+fn editor() {
+  sketch.class([
+    sketch.flex("1"),
+    sketch.overflow_y("scroll"),
+    sketch.scrollbar_color("#44616e"),
+    sketch.scrollbar_width("10px"),
+    sketch.media(media.max_width(size.px(757)), [sketch.margin_top_("auto")]),
+  ])
 }

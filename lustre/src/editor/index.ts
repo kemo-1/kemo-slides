@@ -6,8 +6,21 @@ import * as Y from "yjs"
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { fromUint8Array, toUint8Array } from 'js-base64'
 import * as awarenessProtocol from 'y-protocols/awareness.js'
-import { Markdown } from 'tiptap-markdown'
+// import { Markdown } from 'tiptap-markdown'
+
+import '../../node_modules/reveal.js/dist/reveal.css'
+import './theme.css'
 import './styles.css'
+import RevealMenu from './menu/menu.esm.js'
+import Reveal from 'reveal.js/dist/reveal.esm';
+//@ts-ignore 
+import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
+import { Markdown as MarkdownTiptap } from 'tiptap-markdown';
+import Notes from 'reveal.js/plugin/notes/notes.esm.js';
+//@ts-ignore
+import FsFx from 'reveal.js-fsfx/plugin/fsfx/fsfx.esm.js';
+import { HocuspocusProvider } from '@hocuspocus/provider'
+
 
 const COLORS = ["#ffa5a5", "#f9ffa5", "#a9ffa5", "#a5e8ff", "#dfa5ff"]
 const NAMES = ["Kemo", "David", "Steven", "Mike", "Kyle"]
@@ -26,51 +39,51 @@ export class CollaborativeEditor extends HTMLElement {
 
     constructor() {
         super()
-        const style = document.createElement('style')
-        style.textContent = `
-        .tiptap {
-            :first-child {
-                margin-top: 0;
-            }
-        
-            p.is-editor-empty:first-child::before {
-                color: var(--gray-4);
-                content: attr(data-placeholder);
-                float: left;
-                height: 0;
-                pointer-events: none;
-            }
-        
-            p {
-                word-break: break-all;
-            }
-        
-            .collaboration-cursor__caret {
-                border-left: 1px solid #0d0d0d;
-                border-right: 1px solid #0d0d0d;
-                margin-left: -1px;
-                margin-right: -1px;
-                pointer-events: none;
-                position: relative;
-                word-break: normal;
-            }
-        
-            .collaboration-cursor__label {
-                border-radius: 3px 3px 3px 0;
-                color: #0d0d0d;
-                font-size: 18px;
-                font-weight: 600;
-                left: -1px;
-                line-height: normal;
-                padding: 0.1rem 0.3rem;
-                position: absolute;
-                top: -1.4em;
-                user-select: none;
-                white-space: nowrap;
-            }
-        }
-        `
-        document.head.appendChild(style)
+        // const style = document.createElement('style')
+        // style.textContent = `
+        // .tiptap {
+        //     :first-child {
+        //         margin-top: 0;
+        //     }
+
+        //     p.is-editor-empty:first-child::before {
+        //         color: var(--gray-4);
+        //         content: attr(data-placeholder);
+        //         float: left;
+        //         height: 0;
+        //         pointer-events: none;
+        //     }
+
+        //     p {
+        //         word-break: break-all;
+        //     }
+
+        //     .collaboration-cursor__caret {
+        //         border-left: 1px solid #0d0d0d;
+        //         border-right: 1px solid #0d0d0d;
+        //         margin-left: -1px;
+        //         margin-right: -1px;
+        //         pointer-events: none;
+        //         position: relative;
+        //         word-break: normal;
+        //     }
+
+        //     .collaboration-cursor__label {
+        //         border-radius: 3px 3px 3px 0;
+        //         color: #0d0d0d;
+        //         font-size: 18px;
+        //         font-weight: 600;
+        //         left: -1px;
+        //         line-height: normal;
+        //         padding: 0.1rem 0.3rem;
+        //         position: absolute;
+        //         top: -1.4em;
+        //         user-select: none;
+        //         white-space: nowrap;
+        //     }
+        // }
+        // `
+        // document.head.appendChild(style)
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -98,13 +111,18 @@ export class CollaborativeEditor extends HTMLElement {
         this.appendChild(editorDiv)
 
         const documentName = this.getAttribute('document-name') || 'default-doc'
-        const serverUrl = this.getAttribute('server-url') || 'localhost:8000'
+        const serverUrl = this.getAttribute('server-url') || '192.168.8.118:8000'
 
         const yDoc = new Y.Doc()
-        const awareness = new awarenessProtocol.Awareness(yDoc)
         const provider = new IndexeddbPersistence(documentName, yDoc)
+
+        const awareness = new awarenessProtocol.Awareness(yDoc)
         //@ts-ignore
         provider.awareness = awareness
+        // const provider = new HocuspocusProvider({
+        //     url: "wss://childlike-holy-frown.glitch.me",
+        //     name: documentName,
+        // });        //@ts-ignore
 
         this.initializeConnections(yDoc, provider, documentName, serverUrl)
         this.initializeEditor(yDoc, provider, editorDiv)
@@ -162,24 +180,25 @@ export class CollaborativeEditor extends HTMLElement {
     }
 
     initializeEditor(yDoc: Y.Doc, provider: IndexeddbPersistence, editorDiv: HTMLElement) {
+        let slides = document.querySelector('.slides-element');
+
+
+
         this.editor = new Editor({
+            onCreate({ editor }) {
+                debouncedRevealCreate(editor)
+            },
+            onUpdate({ editor }) {
+                debouncedRevealUpdate(editor)
+            },
             element: editorDiv,
             extensions: [
                 StarterKit.configure({
-                    history: false,
+                    history: true,
                 }),
-                Markdown.configure({
-                    html: true,
-                    tightLists: true,
-                    tightListClass: 'tight',
-                    bulletListMarker: '-',
-                    linkify: false,
-                    breaks: true,
-                    transformPastedText: true,
-                    transformCopiedText: true,
-                }),
+
                 Collaboration.configure({
-                    document: yDoc,
+                    document: provider.doc,
                 }),
                 CollaborationCursor.configure({
                     provider: provider,
@@ -192,3 +211,215 @@ export class CollaborativeEditor extends HTMLElement {
         })
     }
 }
+
+
+function debounce(func: Function, wait: number) {
+    let timeout;
+
+    return function executedFunction(...args: any[]) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Debounced reveal update function
+const debouncedRevealUpdate = debounce((editor: any) => {
+    window.Reveal.destroy();
+    let slides = document.querySelector('.slides-element');
+
+    slides!.innerHTML = /*html*/`
+      <div class="reveal">
+        <div class="slides">
+          <section data-markdown data-visibility="uncounted"
+            data-separator="<hr>"
+            data-separator-vertical="--!" 
+            data-separator-notes="ملاحظة:"
+            data-charset="iso-8859-15">
+            <textarea id="markdown-element" data-template>
+              ${editor.getHTML()}
+            </textarea>
+          </section>
+        </div> 
+      </div>`;
+
+    //@ts-ignore
+    window.Reveal = new Reveal({
+        scrollActivationWidth: null!,
+        // rtl: true,
+        respondToHashChanges: true,
+        hashOneBasedIndex: false,
+        showHiddenSlides: true,
+        hash: true,
+        embedded: true,
+        center: false,
+        hideCursorTime: 5000,
+        transition: 'slide',
+        //@ts-ignore
+        slideNumber: function () {
+            var idx = window.Reveal.getIndices();
+            var value = ["القسم " + idx.h];
+            if (idx.h === 0) {
+                value = [""]
+            } else if (idx.v > 0) {
+                //@ts-ignore
+                value.push('الجزئية');
+                //@ts-ignore
+                value.push(idx.v);
+            }
+            return value;
+        },
+        fsfx: {
+            compatibility: false,
+            auto: {
+                generate: true,
+                color: 'var(--r-main-color)',
+                oppositecolor: 'black',
+                position: {
+                    top: 'null',
+                    bottom: '20px',
+                    left: '20px',
+                    right: 'null',
+                }
+            },
+        },
+        menu: {
+            side: 'left',
+            width: 'full',
+            numbers: false,
+            titleSelector: 'h1, h2, h3, h4, h5, h6',
+            useTextContentForMissingTitles: true,
+            hideMissingTitles: false,
+            markers: true,
+            custom: [
+                {
+                    title: 'طباعة',
+                    icon: '<i class="fas fa-file-pdf"></i>',
+                    content: `    
+                <a style="text-decoration: none;" href="#?print-pdf">
+                  <h1>قم بالضغط هنا لطباعة العرض التقديمي بصيغة pdf</h1>
+                  <i class="fas fa-file-pdf"></i>
+                </a>`
+                },
+            ],
+            themes: false,
+            transitions: false,
+            openButton: true,
+            openSlideNumber: true,
+            keyboard: true,
+            sticky: false,
+            autoOpen: true,
+            delayInit: false,
+            openOnInit: false,
+            loadIcons: true
+        },
+        // //@ts-ignore
+        plugins: [Markdown, Notes, FsFx, RevealMenu],
+    });
+
+
+    window.Reveal.initialize();
+}, 500);
+
+const debouncedRevealCreate = debounce((editor: any) => {
+    if (window.Reveal) {
+        window.Reveal.destroy();
+    }
+    let slides = document.querySelector('.slides-element');
+
+    slides!.innerHTML = /*html*/` 
+      <div class="reveal">
+        <div class="slides">
+          <section data-markdown data-visibility="uncounted"
+            data-separator="<hr>"
+            data-separator-vertical="--!" 
+            data-separator-notes="ملاحظة:"
+            data-charset="iso-8859-15">
+            <textarea id="markdown-element" data-template>
+              ${editor.getHTML()}
+            </textarea>
+          </section>
+        </div> 
+      </div>`;
+
+    //@ts-ignore
+    window.Reveal = new Reveal({
+        scrollActivationWidth: null!,
+        // rtl: true,
+        respondToHashChanges: true,
+        hashOneBasedIndex: false,
+        showHiddenSlides: true,
+        hash: true,
+        embedded: true,
+        center: false,
+        hideCursorTime: 5000,
+        transition: 'slide',
+        //@ts-ignore
+        slideNumber: function () {
+            var idx = window.Reveal.getIndices();
+            var value = ["الوحدة " + idx.h];
+            if (idx.h === 0) {
+                value = [""]
+            } else if (idx.v > 0) {
+                //@ts-ignore
+                value.push('الشريحة');
+                //@ts-ignore
+                value.push(idx.v);
+            }
+            return value;
+        },
+        fsfx: {
+            compatibility: false,
+            auto: {
+                generate: true,
+                color: 'var(--r-main-color)',
+                oppositecolor: 'black',
+                position: {
+                    top: 'null',
+                    bottom: '20px',
+                    left: '20px',
+                    right: 'null',
+                }
+            },
+        },
+        menu: {
+            side: 'left',
+            width: 'full',
+            numbers: false,
+            titleSelector: 'h1, h2, h3, h4, h5, h6',
+            useTextContentForMissingTitles: true,
+            hideMissingTitles: false,
+            markers: true,
+            custom: [
+                {
+                    title: 'طباعة',
+                    icon: '<i class="fas fa-file-pdf"></i>',
+                    content: `    
+                <a style="text-decoration: none;" href="#?print-pdf">
+                  <h1>قم بالضغط هنا لطباعة العرض التقديمي بصيغة pdf</h1>
+                  <i class="fas fa-file-pdf"></i>
+                </a>`
+                },
+            ],
+            themes: false,
+            transitions: false,
+            openButton: true,
+            openSlideNumber: true,
+            keyboard: true,
+            sticky: false,
+            autoOpen: true,
+            delayInit: false,
+            openOnInit: false,
+            loadIcons: true
+        },
+        // //@ts-ignore
+        plugins: [Markdown, Notes, FsFx, RevealMenu],
+    });
+
+
+    window.Reveal.initialize();
+}, 400);

@@ -1,0 +1,95 @@
+{
+  "name": "@koush/wrtc",
+  "description": "Standards-compliant WebRTC implementation for Node",
+  "keywords": [
+    "webrtc",
+    "p2p",
+    "peer"
+  ],
+  "version": "0.5.3",
+  "author": "Alan K <ack@modeswitch.org> (http://blog.modeswitch.org)",
+  "homepage": "https://github.com/koush/node-webrtc",
+  "bugs": "https://github.com/koush/node-webrtc/issues",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/koush/node-webrtc.git"
+  },
+  "main": "lib/index.js",
+  "browser": "lib/browser.js",
+  "binary": {
+    "module_name": "wrtc",
+    "module_path": "./build/Release/{napi_build_version}/..",
+    "host": "https://github.com/koush/node-webrtc/releases/download/",
+    "remote_path": "v{version}",
+    "package_name": "{module_name}-v{version}-napi-v{napi_build_version}-{platform}-{arch}.tar.gz",
+    "napi_versions": [
+      3
+    ]
+  },
+  "engines": {
+    "node": "^8.11.2 || >=10.0.0"
+  },
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.8",
+    "nan": "^2.3.2",
+    "node-addon-api": "^1.6.2",
+    "node-cmake": "2.3.2"
+  },
+  "optionalDependencies": {
+    "domexception": "^1.0.1"
+  },
+  "devDependencies": {
+    "@fidm/x509": "^1.2.1",
+    "@octokit/rest": "^18.12.0",
+    "aws-sdk": "^2.2.10",
+    "browserify-middleware": "^8.1.1",
+    "cross-env": "^5.2.1",
+    "eslint": "^4.14.0",
+    "express": "^4.16.2",
+    "findit2": "^2.2.3",
+    "js-yaml": "^3.13.0",
+    "jsdom": "^15.0.0",
+    "karma": "^4.0.1",
+    "karma-browserify": "^5.1.2",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-tap": "^4.1.4",
+    "karma-tap-pretty-reporter": "^4.1.0",
+    "minimatch": "^3.0.4",
+    "minimist": "1.2.5",
+    "mocha": "^5.2.0",
+    "mocha-sugar-free": "^1.4.0",
+    "node-fetch": "^2.5.0",
+    "q": "^1.5.1",
+    "recursive-copy": "^2.0.10",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "rimraf": "^2.6.2",
+    "semver": "^5.5.0",
+    "server-destroy": "^1.0.1",
+    "simple-peer": "~9.7.0",
+    "tap-spec": "^5.0.0",
+    "tape": "^5.3.2",
+    "temp": "^0.9.0",
+    "travis-multirunner": "^4.3.0",
+    "ws": "^5.2.0"
+  },
+  "scripts": {
+    "build": "node scripts/build-from-source.js",
+    "install": "node scripts/download-prebuilt-or-build-from-source.js",
+    "install-example": "node scripts/install-example.js",
+    "lint": "eslint lib/*.js lib/**/*.js test/*.js test/**/*.js karma/*.js scripts/*.js",
+    "node-pre-gyp-package": "rimraf build/Release/obj.target && rimraf build/Release/.deps && node-pre-gyp package",
+    "node-pre-gyp-package-arch": "rimraf build/Release/obj.target && rimraf build/Release/.deps && node-pre-gyp package --target_arch=$TARGET_ARCH",
+    "prenode-pre-gyp-publish": "npm run node-pre-gyp-package",
+    "node-pre-gyp-publish": "node ./install/publish publish",
+    "test": "node --expose-gc test/all.js",
+    "test:browsers": "cross-env BROWSER=chrome node scripts/karma.js && cross-env BROWSER=firefox node scripts/karma.js",
+    "test:electron": "electron test/electron",
+    "wpt:init": "git submodule update --init --recursive",
+    "wpt:reset": "rimraf ./test/web-platform-tests/tests && npm run wpt:init",
+    "wpt:test": "mocha test/web-platform-tests/run-wpts.js --exit",
+    "wpt:update": "git submodule update --recursive --remote --force && cd test/web-platform-tests/tests && python wpt.py manifest --path ../wpt-manifest.json"
+  }
+}

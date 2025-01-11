@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@leofcoin/p2pt": "^1.7.7"
+  }
+}

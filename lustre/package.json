@@ -4,11 +4,14 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@hocuspocus/provider": "^2.15.0",
     "@tiptap/extension-collaboration": "^2.11.0",
     "@tiptap/extension-collaboration-cursor": "^2.11.0",
     "@tiptap/starter-kit": "^2.11.0",
     "js-base64": "^3.7.7",
     "loro-crdt": "^1.2.7",
+    "reveal.js": "^5.1.0",
+    "reveal.js-fsfx": "^1.2.0",
     "tiptap": "^0.15.0",
     "tiptap-markdown": "^0.8.10",
     "vite": "^6.0.6",
@@ -17,6 +20,10 @@
     "vite-plugin-wasm": "^3.4.1",
     "y-indexeddb": "^9.0.12",
     "y-protocols": "^1.0.6",
+    "y-webrtc": "^10.3.0",
     "yjs": "^13.6.21"
+  },
+  "devDependencies": {
+    "@types/reveal.js": "^5.0.4"
   }
 }

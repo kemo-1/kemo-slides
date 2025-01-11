@@ -7,9 +7,9 @@ import * as awarenessProtocol from 'y-protocols/awareness.js'
 const yDoc = new Y.Doc()
 const awareness = new awarenessProtocol.Awareness(yDoc)
 
-const documentName = ''
+const documentName = 'main'
 
-const serverUrl = 'localhost:8000'
+const serverUrl = '192.168.8.118:8000'
 
 const socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
 
@@ -18,7 +18,7 @@ const provider = new IndexeddbPersistence(documentName, yDoc)
 //@ts-ignore
 provider.awareness = awareness
 
-const yarray = yDoc.getArray('root')
+const yarray = provider.doc.getArray('root')
 
 
 socket.onmessage = (event) => {
@@ -38,14 +38,17 @@ socket.onmessage = (event) => {
 }
 
 yDoc.on('update', () => {
-    const documentState = Y.encodeStateAsUpdate(yDoc)
-    const binaryEncoded = fromUint8Array(documentState)
 
     if (socket.readyState === WebSocket.OPEN) {
+        //@ts-ignore
+        const documentState = Y.encodeStateAsUpdate(yDoc)
+        const binaryEncoded = fromUint8Array(documentState)
+
         let doc = { doc: binaryEncoded }
         let json = JSON.stringify(doc)
         socket.send(json)
     }
+
     let event_change = new CustomEvent('content-update', {
         detail: {
             notes: yarray.toArray()
@@ -53,8 +56,11 @@ yDoc.on('update', () => {
 
         bubbles: true, // Allows the event to bubble up the DOM
         composed: true, // Allows the event to cross the shadow DOM boundary (if present)
-    })
-    document.getElementById("notes-container")!.dispatchEvent(event_change)
+    });
+    if (document.getElementById("notes-container")) {
+        document.getElementById("notes-container")?.dispatchEvent(event_change)
+    }
+
 
 })
 //@ts-ignore

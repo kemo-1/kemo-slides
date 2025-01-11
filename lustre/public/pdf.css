@@ -1,0 +1,49 @@
+/* Hide unnecessary elements for printing */
+#app {
+    display: none !important;
+}
+
+.slide-menu-button,
+.fsfxautobutton {
+    display: none !important;
+}
+
+/* Adjust slide layout for printing */
+
+.pdf-page {
+    background-repeat: no-repeat !important;
+    background-position: top right !important;
+    background-size: 7rem !important;
+    background-image: url(/background.png) !important;
+    background-color: #15161d !important;
+}
+
+/* Ensure slides resize dynamically for print */
+
+
+/* Ensure Reveal.js container fits the print page */
+
+
+/* Adjust bullet list margins */
+ul {
+    margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    background-color: #15161d44 !important;
+
+}
+
+
+/* Adjust slide numbering position for printing */
+.reveal .slide-number {
+    bottom: auto !important;
+    right: auto !important;
+    top: 20px !important;
+    left: 20px !important;
+}
