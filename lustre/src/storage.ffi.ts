@@ -10,68 +10,79 @@ import { WebrtcProvider } from 'y-webrtc';
 import { Ok, Error } from './gleam.mjs'
 
 export function init_connection() {
+    const documentName = "main"
+    const serverUrl = '192.168.8.118:8000'
+    const yDoc = new Y.Doc()
+    //@ts-ignore
+    window.yarray = yDoc.getArray("root")
     const room = localStorage.getItem("room")
-
-    if (room) {
-        let yDoc = new Y.Doc()
-        //@ts-ignore
-        window.yarray = yDoc.getArray('root')
-        let obj = JSON.parse(room)
-
-        new IndexeddbPersistence(obj.name + obj.password, yDoc)
-        const provider = new WebrtcProvider(obj.name + obj.password, yDoc, { signaling: ['ws://localhost:4444'], password: obj.password })
-
-        //@ts-ignore
-        // provider.awareness = awareness
+    const Socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
 
 
+    const provider = new IndexeddbPersistence(documentName, yDoc)
+    const awareness = new awarenessProtocol.Awareness(yDoc)
+    //@ts-ignore
+    provider.awareness = awareness
 
-        // socket.onmessage = (event) => {
-        //     let json = JSON.parse(event.data)
-        //     let doc = json.doc
-        //     let awareness = json.awareness
+    Socket.onmessage = (event) => {
+        let json = JSON.parse(event.data)
+        let doc = json.doc
+        let awareness = json.awareness
 
-        //     if (doc !== undefined) {
-        //         const binaryEncoded = toUint8Array(doc)
-        //         Y.applyUpdate(yDoc, binaryEncoded)
-        //     }
-        //     if (awareness !== undefined) {
-        //         const binaryEncoded = toUint8Array(awareness)
-        //         //@ts-ignore
-        //         awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
-        //     }
-        // }
-
-
-        yDoc.on('update', () => {
-
-            // if (socket.readyState === WebSocket.OPEN) {
-            //     //@ts-ignore
-            //     const documentState = Y.encodeStateAsUpdate(yDoc)
-            //     const binaryEncoded = fromUint8Array(documentState)
-
-            //     let doc = { doc: binaryEncoded }
-            //     let json = JSON.stringify(doc)
-            //     socket.send(json)
-            // }
-
-            let event_change = new CustomEvent('content-update', {
-                detail: {
-                    //@ts-ignore
-                    notes: window.yarray.toArray()
-                },
-
-                bubbles: true, // Allows the event to bubble up the DOM
-                composed: true, // Allows the event to cross the shadow DOM boundary (if present)
-            });
-            if (document.getElementById("notes-container")) {
-                document.getElementById("notes-container")?.dispatchEvent(event_change)
-            }
-
-
-        })
-
+        if (doc !== undefined) {
+            const binaryEncoded = toUint8Array(doc)
+            Y.applyUpdate(yDoc, binaryEncoded)
+        }
+        if (awareness !== undefined) {
+            const binaryEncoded = toUint8Array(awareness)
+            //@ts-ignore
+            awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
+        }
     }
+
+    yDoc.on('update', () => {
+        const documentState = Y.encodeStateAsUpdate(yDoc)
+        const binaryEncoded = fromUint8Array(documentState)
+        // let event = new EventSource("content_changed", ({ e }) => {
+
+        // }))
+        if (Socket.readyState === WebSocket.OPEN) {
+            let doc = { doc: binaryEncoded }
+            let json = JSON.stringify(doc)
+            Socket.send(json)
+        }
+
+        let event_change = new CustomEvent('content-update', {
+            detail: {
+                //@ts-ignore
+                notes: window.yarray.toArray()
+            },
+
+            bubbles: true, // Allows the event to bubble up the DOM
+            composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+        });
+        if (document.getElementById("notes-container")) {
+            document.getElementById("notes-container")?.dispatchEvent(event_change)
+        }
+
+
+
+    })
+    //@ts-ignore
+    provider.awareness.on('update', ({ added, updated, removed }) => {
+        if (Socket.readyState === WebSocket.OPEN) {
+            const changedClients = added.concat(updated).concat(removed)
+            //@ts-ignore
+            const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
+            const binaryEncoded = fromUint8Array(documentAwareness)
+
+            let awareness = { awareness: binaryEncoded }
+            let json = JSON.stringify(awareness)
+            Socket.send(json)
+        }
+    })
+
+
 }
 
 
