@@ -1,105 +1,150 @@
 import { fromUint8Array, toUint8Array } from 'js-base64';
-import * as Y from "yjs"
-import { IndexeddbPersistence } from 'y-indexeddb'
-import * as awarenessProtocol from 'y-protocols/awareness.js'
-import { WebrtcProvider } from 'y-webrtc';
 
+import { LoroDoc } from "loro-crdt/base64";
 
-
-//@ts-ignore
+//@ts-ignore 
 import { Ok, Error } from './gleam.mjs'
+const loro_doc = new LoroDoc()
 
-export function init_connection() {
+
+export async function init_connection() {
+    let saved_doc = localStorage.getItem("loro_doc")
     const documentName = "main"
     const serverUrl = '192.168.8.118:8000'
-    const yDoc = new Y.Doc()
-    //@ts-ignore
-    window.yarray = yDoc.getArray("root")
-    const room = localStorage.getItem("room")
     const Socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
+    if (saved_doc) {
+        let bytes = toUint8Array(saved_doc)
+        loro_doc.import(bytes)
+        loro_doc.commit()
+        await Promise.resolve().then((e => {
+
+            Socket.onopen = () => {
 
 
-    const provider = new IndexeddbPersistence(documentName, yDoc)
-    const awareness = new awarenessProtocol.Awareness(yDoc)
-    //@ts-ignore
-    provider.awareness = awareness
+                let new_bytes = loro_doc.export({ mode: "snapshot" })
+                let string = fromUint8Array(new_bytes)
+                let doc = { doc: string }
+                let json = JSON.stringify(doc)
+                Socket.send(json)
 
-    Socket.onmessage = (event) => {
-        let json = JSON.parse(event.data)
-        let doc = json.doc
-        let awareness = json.awareness
+            }
 
-        if (doc !== undefined) {
-            const binaryEncoded = toUint8Array(doc)
-            Y.applyUpdate(yDoc, binaryEncoded)
-        }
-        if (awareness !== undefined) {
-            const binaryEncoded = toUint8Array(awareness)
-            //@ts-ignore
-            awarenessProtocol.applyAwarenessUpdate(provider.awareness, binaryEncoded, '')
-        }
-    }
 
-    yDoc.on('update', () => {
-        const documentState = Y.encodeStateAsUpdate(yDoc)
-        const binaryEncoded = fromUint8Array(documentState)
-        // let event = new EventSource("content_changed", ({ e }) => {
 
-        // }))
-        if (Socket.readyState === WebSocket.OPEN) {
-            let doc = { doc: binaryEncoded }
-            let json = JSON.stringify(doc)
-            Socket.send(json)
-        }
+            let event_change = new CustomEvent('content-update', {
+                detail: {
+                    notes: loro_doc.getMovableList("root").toArray()
+                },
 
+                bubbles: true, // Allows the event to bubble up the DOM
+                composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+            });
+
+            if (document.querySelector("#notes-container")) {
+                document.querySelector("#notes-container")!.dispatchEvent(event_change)
+            }
+
+
+        }))
+
+
+
+
+
+
+
+
+
+    } else {
         let event_change = new CustomEvent('content-update', {
             detail: {
-                //@ts-ignore
-                notes: window.yarray.toArray()
+                notes: loro_doc.getMovableList("root").toArray()
             },
 
             bubbles: true, // Allows the event to bubble up the DOM
             composed: true, // Allows the event to cross the shadow DOM boundary (if present)
         });
-        if (document.getElementById("notes-container")) {
-            document.getElementById("notes-container")?.dispatchEvent(event_change)
+
+        if (document.querySelector("#notes-container")) {
+            document.querySelector("#notes-container")!.dispatchEvent(event_change)
+        }
+    }
+
+
+    Socket.onmessage = async (event) => {
+        let json = JSON.parse(event.data)
+        let loro_doc_string = json.doc
+
+        if (loro_doc_string !== undefined) {
+            const binaryEncoded = toUint8Array(loro_doc_string)
+            loro_doc.import(binaryEncoded)
+            loro_doc.commit()
+            await Promise.resolve().then((e => {
+
+                let event_change = new CustomEvent('content-update', {
+                    detail: {
+                        notes: loro_doc.getMovableList("root").toArray()
+                    },
+
+                    bubbles: true, // Allows the event to bubble up the DOM
+                    composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+                });
+
+                if (document.querySelector("#notes-container")) {
+                    document.querySelector("#notes-container")!.dispatchEvent(event_change)
+                }
+
+
+            }))
+
+
         }
 
 
+    }
+    loro_doc.subscribeLocalUpdates(async (event) => {
+        loro_doc.commit()
+        await Promise.resolve().then((e => {
 
-    })
-    //@ts-ignore
-    provider.awareness.on('update', ({ added, updated, removed }) => {
-        if (Socket.readyState === WebSocket.OPEN) {
-            const changedClients = added.concat(updated).concat(removed)
-            //@ts-ignore
-            const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
-            const binaryEncoded = fromUint8Array(documentAwareness)
 
-            let awareness = { awareness: binaryEncoded }
-            let json = JSON.stringify(awareness)
-            Socket.send(json)
-        }
+            let value = loro_doc.getMovableList("root").toArray()
+            console.log("content updated", value)
+            let bytes = loro_doc.export({ mode: "snapshot" })
+            const base64 = fromUint8Array(bytes)
+
+            let event_change = new CustomEvent('content-update', {
+                detail: {
+                    notes: loro_doc.getMovableList("root").toArray()
+                },
+
+                bubbles: true, // Allows the event to bubble up the DOM
+                composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+            });
+
+            if (document.querySelector("#notes-container")) {
+                document.querySelector("#notes-container")!.dispatchEvent(event_change)
+            }
+
+            if (Socket.readyState === WebSocket.OPEN) {
+                //@ts-ignore
+
+                let string = fromUint8Array(bytes)
+                let doc = { doc: string }
+                let json = JSON.stringify(doc)
+                Socket.send(json)
+            }
+
+            localStorage.setItem("loro_doc", base64)
+        }))
     })
+
 
 
 }
 
 
 
-//@ts-ignore
-// provider.awareness.on('update', ({ added, updated, removed }) => {
-//     if (socket.readyState === WebSocket.OPEN) {
-//         const changedClients = added.concat(updated).concat(removed)
-//         //@ts-ignore
-//         const documentAwareness = awarenessProtocol.encodeAwarenessUpdate(provider.awareness, changedClients)
-//         const binaryEncoded = fromUint8Array(documentAwareness)
 
-//         let awareness = { awareness: binaryEncoded }
-//         let json = JSON.stringify(awareness)
-//         socket.send(json)
-//     }
-// })
 export function get_room() {
     const room = localStorage.getItem("room")
     if (room) {
@@ -112,28 +157,27 @@ export function get_room() {
 
 }
 export function create_room(name, password) {
-    // let name = ""
-    // let password = ""
+
     let obj = { name: name, password: password }
     let string = JSON.stringify(obj)
     localStorage.setItem("room", string)
 }
 export function insert_note(word: string) {
-    //@ts-ignore
-    window.yarray.insert(0, [word])
-    //@ts-ignore
-    return window.yarray.toArray()
+    loro_doc.getMovableList("root").insert(0, word)
+    loro_doc.commit()
+
+    return loro_doc.getMovableList("root").toArray()
 }
 
 export function delete_note(index: number) {
-    //@ts-ignore
-    window.yarray.delete(index, 1)
-    //@ts-ignore
-    return window.yarray.toArray()
+
+    loro_doc.getMovableList("root").delete(index, 1)
+    loro_doc.commit()
+
+    return loro_doc.getMovableList("root").toArray()
 }
 
-export function get_notes() {
-    //@ts-ignore
-    return window.yarray.toArray()
+export async function get_notes() {
+    return loro_doc.getMovableList("root").toArray()
 }
 
