@@ -6,6 +6,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      content: write
     runs-on: ubuntu-latest
     name: Build and Push
     steps:
