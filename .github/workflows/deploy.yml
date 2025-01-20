@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Push    
     permissions:
-          content: write
+          id-token: read
+          contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
