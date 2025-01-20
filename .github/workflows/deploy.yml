@@ -37,8 +37,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
           MESSAGE: "Build: ({sha}) {msg}" # The commit message
 
-      - name: Change branch
-        uses: actions/checkout@v4
+      - name: repo-sync
+        uses: wei/git-sync@v3
+        env:
+          SOURCE_REPO: "https://github.com/kemo-1/beam_party.git"
+          SOURCE_BRANCH: "server"
+          DESTINATION_REPO: ${{ secrets.glitch_git_URL }}
+          DESTINATION_BRANCH: "master"
         with:
-          ref: server
-      - run: npx glitcheroo deploy --git-url=${{ secrets.GLITCH_URL }}
+          args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
+
