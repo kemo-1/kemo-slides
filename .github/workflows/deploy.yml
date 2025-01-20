@@ -1,8 +1,10 @@
 # .github/workflows/publish.yml
 name: Generate a build and push to another branch
 permissions:
-  id-token: read
   contents: write
+  deployments: write
+  id-token: write
+
 on:
   workflow_dispatch:
 
