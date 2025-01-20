@@ -40,5 +40,5 @@ jobs:
       - name: Change branch
         uses: actions/checkout@v4
         with:
-          ref: my-branch
+          ref: server
       - run: npx glitcheroo deploy --git-url=${{ secrets.GLITCH_URL }}
