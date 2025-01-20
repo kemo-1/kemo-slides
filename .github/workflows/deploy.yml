@@ -1,9 +1,7 @@
 # .github/workflows/publish.yml
 name: Generate a build and push to another branch
-permissions:
-  contents: write
-  deployments: write
-  id-token: write
+permissions: write-all
+
 
 on:
   workflow_dispatch:
@@ -43,7 +41,7 @@ jobs:
           SOURCE_REPO: "https://github.com/kemo-1/beam_party.git"
           SOURCE_BRANCH: "server"
           DESTINATION_REPO: ${{ secrets.GLITCH_GIT_URL }}
-          DESTINATION_BRANCH: "main"
+          DESTINATION_BRANCH: "master"
         with:
           args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
 
