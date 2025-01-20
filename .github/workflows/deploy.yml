@@ -6,10 +6,11 @@ on:
 
 jobs:
   build:
-    permissions:
-      content: write
+
     runs-on: ubuntu-latest
-    name: Build and Push
+    name: Build and Push    
+    permissions:
+          content: write
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
