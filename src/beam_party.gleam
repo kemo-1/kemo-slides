@@ -55,7 +55,11 @@ pub fn main() {
         }
 
         _ -> {
-          new_response(404, "Not found") |> Ok
+          new_response(
+            404,
+            "this is a websocket server it dosen't except get requests",
+          )
+          |> Ok
         }
       }
 
