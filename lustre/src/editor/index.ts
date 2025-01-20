@@ -293,8 +293,8 @@ const debouncedRevealUpdate = debounce((editor: any) => {
                 position: {
                     top: 'null',
                     bottom: '20px',
-                    left: '20px',
-                    right: 'null',
+                    left: 'null',
+                    right: '20px',
                 }
             },
         },
@@ -308,11 +308,11 @@ const debouncedRevealUpdate = debounce((editor: any) => {
             markers: true,
             custom: [
                 {
-                    title: 'طباعة',
+                    title: 'print',
                     icon: '<i class="fas fa-file-pdf"></i>',
                     content: `    
                 <a style="text-decoration: none;" href="#?print-pdf">
-                  <h1>قم بالضغط هنا لطباعة العرض التقديمي بصيغة pdf</h1>
+                  <h1>click here to print the slides to pdf</h1>
                   <i class="fas fa-file-pdf"></i>
                 </a>`
                 },
@@ -392,8 +392,8 @@ const debouncedRevealCreate = debounce((editor: any) => {
                 position: {
                     top: 'null',
                     bottom: '20px',
-                    left: '20px',
-                    right: 'null',
+                    left: 'null',
+                    right: '20px',
                 }
             },
         },
@@ -407,11 +407,11 @@ const debouncedRevealCreate = debounce((editor: any) => {
             markers: true,
             custom: [
                 {
-                    title: 'طباعة',
+                    title: 'print',
                     icon: '<i class="fas fa-file-pdf"></i>',
                     content: `    
                 <a style="text-decoration: none;" href="#?print-pdf">
-                  <h1>قم بالضغط هنا لطباعة العرض التقديمي بصيغة pdf</h1>
+                  <h1>click here to print the slides to pdf</h1>
                   <i class="fas fa-file-pdf"></i>
                 </a>`
                 },

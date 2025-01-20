@@ -403,7 +403,6 @@ fn view(model: Model) {
           _ -> {
             [
               html.div(container(), [attribute.class("editor-container")], [
-                html.div(slides(), [attribute.class("slides-element")], []),
                 element.element(
                   "collaborative-editor",
                   editor(),
@@ -413,6 +412,7 @@ fn view(model: Model) {
                   ],
                   [],
                 ),
+                html.div(slides(), [attribute.class("slides-element")], []),
               ]),
             ]
           }

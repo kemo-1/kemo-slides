@@ -1,6 +1,6 @@
 import { fromUint8Array, toUint8Array } from 'js-base64';
 
-import { LoroDoc } from "loro-crdt/base64";
+import { LoroDoc } from "loro-crdt";
 
 //@ts-ignore 
 import { Ok, Error } from './gleam.mjs'
