@@ -57,7 +57,7 @@ pub fn main() {
         _ -> {
           new_response(
             404,
-            "this is a websocket server it dosen't except get requests",
+            "this is a websocket server it dosen't accept get requests",
           )
           |> Ok
         }
