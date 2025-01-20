@@ -1,0 +1,47 @@
+# .github/workflows/publish.yml
+name: Generate a build and push to another branch
+permissions: write-all
+
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    name: Build and Push    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: "27.2"
+          gleam-version: "1.7.0"
+          rebar3-version: "3"
+          # elixir-version: "1.15.4"
+      - run: gleam deps download
+
+      - name: Build
+        run:  gleam export erlang-shipment # The build command of your project
+      - name: Copy and Paste Glitch Files
+        run:  cp glitch_files/* build/erlang-shipment/ 
+    
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: server # The branch name where you want to push the assets
+          FOLDER: build/erlang-shipment # The directory where your assets are generated
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+          MESSAGE: "Build: ({sha}) {msg}" # The commit message
+
+      - name: repo-sync
+        uses: wei/git-sync@v1
+        env:
+          SOURCE_REPO: "https://github.com/kemo-1/beam_party.git"
+          SOURCE_BRANCH: "server"
+          DESTINATION_REPO: ${{ secrets.GLITCH_GIT_URL }}
+          DESTINATION_BRANCH: "master"
+        with:
+          args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
+
