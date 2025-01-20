@@ -1,0 +1,1 @@
+-record(event, {message :: binary()}).

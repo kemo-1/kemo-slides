@@ -1,0 +1,1 @@
+-record(d_bag, {inner :: bravo@internal@master:inner_table()}).

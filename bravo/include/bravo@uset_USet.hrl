@@ -1,0 +1,1 @@
+-record(u_set, {inner :: bravo@internal@master:inner_table()}).

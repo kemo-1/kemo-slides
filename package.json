@@ -1,0 +1,12 @@
+{
+    "scripts": {
+        "install": "python3 narflinger.py",
+        "start": "bash entrypoint.sh run"
+    },
+    "type": "module",
+    "narflinger": {
+        "basenames": [
+            "4fdhbvhljgl58248pdzpbdz0sz6zkfy8-erlang-27.2"
+        ]
+    }
+}

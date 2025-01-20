@@ -1,0 +1,1 @@
+-record(send_to_all, {message :: binary(), save_to_db :: boolean()}).
