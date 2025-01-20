@@ -43,7 +43,7 @@ jobs:
           SOURCE_REPO: "https://github.com/kemo-1/beam_party.git"
           SOURCE_BRANCH: "server"
           DESTINATION_REPO: ${{ secrets.GLITCH_GIT_URL }}
-          DESTINATION_BRANCH: "master"
+          DESTINATION_BRANCH: "main"
         with:
           args: $SOURCE_REPO $SOURCE_BRANCH $DESTINATION_REPO $DESTINATION_BRANCH
 
