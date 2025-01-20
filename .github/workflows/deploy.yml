@@ -12,9 +12,6 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
-      - name: Install all dependencies
-        run: npm install
-
       - name: Build
         run:  gleam export erlang-shipment # The build command of your project
       - name: Copy and Paste Glitch Files
