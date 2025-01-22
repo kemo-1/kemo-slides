@@ -2,9 +2,7 @@ name: Deploy Frontend
 
 on:
   workflow_dispatch:
-defaults:
- run:
-  working-directory: ./lustre
+
 
 
 jobs:
@@ -15,14 +13,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-      - name: Install dependencies  
-
-        uses: bahmutov/npm-install@v1
-     
-        
+      - run: cd lustre
       - name: install gleam
         uses: erlef/setup-beam@v1
         with:
@@ -39,7 +30,7 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
         with:
-          path: dist/
+          path: lustre/dist/
 
   # Deployment job
   deploy:
