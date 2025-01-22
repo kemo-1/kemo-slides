@@ -8,78 +8,34 @@ const loro_doc = new LoroDoc()
 
 
 export async function init_connection() {
-    let saved_doc = localStorage.getItem("loro_doc")
-    const documentName = "main"
-    const serverUrl = '192.168.8.118:8000'
-    const Socket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
-    if (saved_doc) {
-        let bytes = toUint8Array(saved_doc)
-        loro_doc.import(bytes)
-        loro_doc.commit()
-        await Promise.resolve().then((e => {
+    const room = localStorage.getItem("room")
+    let documentName
 
-            Socket.onopen = () => {
+    if (room) {
+        let obj = JSON.parse(room)
+        documentName = obj.name + obj.password
 
-
-                let new_bytes = loro_doc.export({ mode: "snapshot" })
-                let string = fromUint8Array(new_bytes)
-                let doc = { doc: string }
-                let json = JSON.stringify(doc)
-                Socket.send(json)
-
-            }
-
-
-
-            let event_change = new CustomEvent('content-update', {
-                detail: {
-                    notes: loro_doc.getMovableList("root").toArray()
-                },
-
-                bubbles: true, // Allows the event to bubble up the DOM
-                composed: true, // Allows the event to cross the shadow DOM boundary (if present)
-            });
-
-            if (document.querySelector("#notes-container")) {
-                document.querySelector("#notes-container")!.dispatchEvent(event_change)
-            }
-
-
-        }))
-
-
-
-
-
-
-
-
-
-    } else {
-        let event_change = new CustomEvent('content-update', {
-            detail: {
-                notes: loro_doc.getMovableList("root").toArray()
-            },
-
-            bubbles: true, // Allows the event to bubble up the DOM
-            composed: true, // Allows the event to cross the shadow DOM boundary (if present)
-        });
-
-        if (document.querySelector("#notes-container")) {
-            document.querySelector("#notes-container")!.dispatchEvent(event_change)
-        }
-    }
-
-
-    Socket.onmessage = async (event) => {
-        let json = JSON.parse(event.data)
-        let loro_doc_string = json.doc
-
-        if (loro_doc_string !== undefined) {
-            const binaryEncoded = toUint8Array(loro_doc_string)
-            loro_doc.import(binaryEncoded)
+        let saved_doc = localStorage.getItem("loro_doc")
+        const serverUrl = 'hail-past-brochure.glitch.me'
+        const Socket = new WebSocket(`wss://${serverUrl}/api/${documentName}`)
+        if (saved_doc) {
+            let bytes = toUint8Array(saved_doc)
+            loro_doc.import(bytes)
             loro_doc.commit()
             await Promise.resolve().then((e => {
+
+                Socket.onopen = () => {
+
+
+                    let new_bytes = loro_doc.export({ mode: "snapshot" })
+                    let string = fromUint8Array(new_bytes)
+                    let doc = { doc: string }
+                    let json = JSON.stringify(doc)
+                    Socket.send(json)
+
+                }
+
+
 
                 let event_change = new CustomEvent('content-update', {
                     detail: {
@@ -98,20 +54,14 @@ export async function init_connection() {
             }))
 
 
-        }
 
 
-    }
-    loro_doc.subscribeLocalUpdates(async (event) => {
-        loro_doc.commit()
-        await Promise.resolve().then((e => {
 
 
-            let value = loro_doc.getMovableList("root").toArray()
-            console.log("content updated", value)
-            let bytes = loro_doc.export({ mode: "snapshot" })
-            const base64 = fromUint8Array(bytes)
 
+
+
+        } else {
             let event_change = new CustomEvent('content-update', {
                 detail: {
                     notes: loro_doc.getMovableList("root").toArray()
@@ -124,20 +74,83 @@ export async function init_connection() {
             if (document.querySelector("#notes-container")) {
                 document.querySelector("#notes-container")!.dispatchEvent(event_change)
             }
+        }
 
-            if (Socket.readyState === WebSocket.OPEN) {
-                //@ts-ignore
 
-                let string = fromUint8Array(bytes)
-                let doc = { doc: string }
-                let json = JSON.stringify(doc)
-                Socket.send(json)
+        Socket.onmessage = async (event) => {
+            let json = JSON.parse(event.data)
+            let loro_doc_string = json.doc
+
+            if (loro_doc_string !== undefined) {
+                const binaryEncoded = toUint8Array(loro_doc_string)
+                loro_doc.import(binaryEncoded)
+                loro_doc.commit()
+                await Promise.resolve().then((e => {
+
+                    let event_change = new CustomEvent('content-update', {
+                        detail: {
+                            notes: loro_doc.getMovableList("root").toArray()
+                        },
+
+                        bubbles: true, // Allows the event to bubble up the DOM
+                        composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+                    });
+
+                    if (document.querySelector("#notes-container")) {
+                        document.querySelector("#notes-container")!.dispatchEvent(event_change)
+                    }
+
+
+                }))
+
+
             }
 
-            localStorage.setItem("loro_doc", base64)
-        }))
-    })
 
+        }
+        loro_doc.subscribeLocalUpdates(async (event) => {
+            loro_doc.commit()
+            await Promise.resolve().then((e => {
+
+
+                let value = loro_doc.getMovableList("root").toArray()
+                console.log("content updated", value)
+                let bytes = loro_doc.export({ mode: "snapshot" })
+                const base64 = fromUint8Array(bytes)
+
+                let event_change = new CustomEvent('content-update', {
+                    detail: {
+                        notes: loro_doc.getMovableList("root").toArray()
+                    },
+
+                    bubbles: true, // Allows the event to bubble up the DOM
+                    composed: true, // Allows the event to cross the shadow DOM boundary (if present)
+                });
+
+                if (document.querySelector("#notes-container")) {
+                    document.querySelector("#notes-container")!.dispatchEvent(event_change)
+                }
+
+                if (Socket.readyState === WebSocket.OPEN) {
+                    //@ts-ignore
+
+                    let string = fromUint8Array(bytes)
+                    let doc = { doc: string }
+                    let json = JSON.stringify(doc)
+                    Socket.send(json)
+                }
+
+                localStorage.setItem("loro_doc", base64)
+            }))
+        })
+
+
+
+    } else {
+        localStorage.removeItem("room")
+        location.href = '/'
+
+    }
 
 
 }

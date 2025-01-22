@@ -1,8 +1,10 @@
 import bravo
 import bravo/uset
+import cors_builder as cors
 import gleam/bytes_tree
 import gleam/dynamic
 import gleam/erlang/process
+import gleam/http
 import gleam/http/request
 import gleam/http/response
 import gleam/io
@@ -16,6 +18,14 @@ import websocket/websocket
 fn new_response(status: Int, body: String) {
   response.new(status)
   |> response.set_body(body |> bytes_tree.from_string |> mist.Bytes)
+}
+
+fn cors() {
+  cors.new()
+  |> cors.allow_origin("http://localhost:5137")
+  |> cors.allow_method(http.Get)
+  |> cors.allow_method(http.Post)
+  |> cors.allow_method(http.Connect)
 }
 
 pub fn main() {
@@ -36,6 +46,8 @@ pub fn main() {
   let assert Ok(pubsub) = pubsub.start()
   let assert Ok(_) =
     mist.new(fn(request) {
+      use request <- cors.mist_middleware(request, cors())
+
       let response = case request.path_segments(request) {
         ["api", ..] -> {
           let new_list =
