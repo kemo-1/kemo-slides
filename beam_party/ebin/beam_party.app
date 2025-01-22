@@ -2,6 +2,7 @@
     {vsn, "1.0.0"},
     {applications, [bravo,
                     chip,
+                    cors_builder,
                     gleam_erlang,
                     gleam_http,
                     gleam_json,

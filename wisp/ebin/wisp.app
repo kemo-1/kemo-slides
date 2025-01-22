@@ -1,0 +1,20 @@
+{application, wisp, [
+    {vsn, "1.5.1"},
+    {applications, [directories,
+                    exception,
+                    gleam_crypto,
+                    gleam_erlang,
+                    gleam_http,
+                    gleam_json,
+                    gleam_stdlib,
+                    logging,
+                    marceau,
+                    mist,
+                    simplifile]},
+    {description, "A practical web framework for Gleam"},
+    {modules, [wisp,
+               wisp@internal,
+               wisp@testing,
+               wisp@wisp_mist]},
+    {registered, []}
+]}.
