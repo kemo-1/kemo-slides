@@ -23,7 +23,7 @@ jobs:
       - run: cd lustre && gleam deps download 
         
       - name: Build project
-        run: cd lustre && npm install && npm run build
+        run: cd lustre && npm install --force && npm run build
         
       - name: Upload static files as artifact
         id: deployment
@@ -33,6 +33,7 @@ jobs:
 
   # Deployment job
   deploy:
+     needs: build
      runs-on: ubuntu-latest
      steps:
       - name: Publish to Cloudflare Pages
