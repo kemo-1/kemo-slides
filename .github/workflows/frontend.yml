@@ -25,22 +25,11 @@ jobs:
       - name: Build project
         run: cd lustre && npm install --force && npm run build
         
-      - name: Upload static files as artifact
-        id: deployment
-        uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
-        with:
-          path: lustre/dist/
-
-  # Deployment job
-  deploy:
-     needs: build
-     runs-on: ubuntu-latest
-     steps:
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ secrets.CLOUDFLARE_NAME }}
-          directory: lustre/dist/
+          directory: ./lustre/dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
