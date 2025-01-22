@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - run: cd lustre
       - name: install gleam
         uses: erlef/setup-beam@v1
         with:
@@ -21,10 +20,10 @@ jobs:
           gleam-version: "1.6.3"
           rebar3-version: "3"
           # elixir-version: "1.15.4"
-      - run: gleam deps download 
+      - run: cd lustre && gleam deps download 
         
       - name: Build project
-        run: npm run build
+        run: cd lustre && npm run build
         
       - name: Upload static files as artifact
         id: deployment
