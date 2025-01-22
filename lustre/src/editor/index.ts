@@ -323,7 +323,7 @@ const debouncedRevealUpdate = debounce((editor: any) => {
             openSlideNumber: true,
             keyboard: true,
             sticky: false,
-            autoOpen: true,
+            autoOpen: false,
             delayInit: false,
             openOnInit: false,
             loadIcons: true
@@ -397,38 +397,38 @@ const debouncedRevealCreate = debounce((editor: any) => {
                 }
             },
         },
-        menu: {
-            side: 'left',
-            width: 'full',
-            numbers: false,
-            titleSelector: 'h1, h2, h3, h4, h5, h6',
-            useTextContentForMissingTitles: true,
-            hideMissingTitles: false,
-            markers: true,
-            // custom: [
-            //     {
-            //         title: 'print',
-            //         icon: '<i class="fas fa-file-pdf"></i>',
-            //         content: `    
-            //     <a style="text-decoration: none;" href="#?print-pdf">
-            //       <h1>click here to print the slides to pdf</h1>
-            //       <i class="fas fa-file-pdf"></i>
-            //     </a>`
-            //     },
-            // ],
-            themes: false,
-            transitions: false,
-            openButton: true,
-            openSlideNumber: true,
-            keyboard: true,
-            sticky: false,
-            autoOpen: true,
-            delayInit: false,
-            openOnInit: false,
-            loadIcons: true
-        },
+        // menu: {
+        //     side: 'left',
+        //     width: 'full',
+        //     numbers: false,
+        //     titleSelector: 'h1, h2, h3, h4, h5, h6',
+        //     useTextContentForMissingTitles: true,
+        //     hideMissingTitles: false,
+        //     markers: true,
+        //     // custom: [
+        //     //     {
+        //     //         title: 'print',
+        //     //         icon: '<i class="fas fa-file-pdf"></i>',
+        //     //         content: `    
+        //     //     <a style="text-decoration: none;" href="#?print-pdf">
+        //     //       <h1>click here to print the slides to pdf</h1>
+        //     //       <i class="fas fa-file-pdf"></i>
+        //     //     </a>`
+        //     //     },
+        //     // ],
+        //     themes: false,
+        //     transitions: false,
+        //     openButton: true,
+        //     openSlideNumber: true,
+        //     keyboard: true,
+        //     sticky: false,
+        //     autoOpen: false,
+        //     delayInit: true,
+        //     openOnInit: false,
+        //     loadIcons: true
+        // },
         // //@ts-ignore
-        plugins: [Markdown, Notes, FsFx, RevealMenu],
+        plugins: [Markdown, Notes, FsFx],
     });
 
 

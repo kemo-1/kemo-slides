@@ -1,10 +1,10 @@
 import { fromUint8Array, toUint8Array } from 'js-base64';
 
-import { LoroDoc } from "loro-crdt";
+
 
 //@ts-ignore 
 import { Ok, Error } from './gleam.mjs'
-const loro_doc = new LoroDoc()
+
 import * as Y from 'yjs'
 import { IndexeddbPersistence } from 'y-indexeddb';
 
