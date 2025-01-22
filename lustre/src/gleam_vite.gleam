@@ -298,59 +298,59 @@ fn view(model: Model) {
     Ok(NotesChanged(notes))
   }
 
-  html.div(
-    sketch.class([]),
-    [
-      attribute.id("notes-container"),
-      event.on("content-update", content_updated),
-    ],
-    case model.route {
-      Url(document_name) -> {
-        case document_name {
-          "" -> {
-            case model.room {
-              None -> {
-                [
-                  html.div(sketch.class([]), [], [html.text("Enter room name")]),
-                  html.input(sketch.class([]), [
-                    attribute.type_("text"),
-                    event.on_input(RoomNameInputChanged),
-                  ]),
-                  html.div(sketch.class([]), [], [
-                    html.text("Enter room password"),
-                  ]),
-                  html.input(sketch.class([]), [
-                    attribute.type_("password"),
-                    event.on_input(RoomPasswordInputChanged),
-                  ]),
-                  html.button(sketch.class([]), [event.on_click(CreateRoom)], [
-                    html.text("create or join a room"),
-                  ]),
-                  case model.saved_room {
-                    Some(room) -> {
-                      html.div(sketch.class([]), [], [
-                        html.text("Rooms"),
-                        html.button(
-                          sketch.class([]),
-                          [event.on_click(RoomExists(room))],
-                          [
-                            html.text("room name: " <> room.name),
-                            html.text("room password: " <> room.password),
-                          ],
-                        ),
-                      ])
-                    }
-                    None -> {
-                      html.div(sketch.class([]), [], [
-                        html.text("no saved rooms found"),
-                      ])
-                    }
-                  },
-                ]
-              }
-              Some(room) -> {
-                [
-                  html.div(sketch.class([]), [], [
+  html.div(sketch.class([]), [], case model.route {
+    Url(document_name) -> {
+      case document_name {
+        "" -> {
+          case model.room {
+            None -> {
+              [
+                html.div(sketch.class([]), [], [html.text("Enter room name")]),
+                html.input(sketch.class([]), [
+                  attribute.type_("text"),
+                  event.on_input(RoomNameInputChanged),
+                ]),
+                html.div(sketch.class([]), [], [
+                  html.text("Enter room password"),
+                ]),
+                html.input(sketch.class([]), [
+                  attribute.type_("password"),
+                  event.on_input(RoomPasswordInputChanged),
+                ]),
+                html.button(sketch.class([]), [event.on_click(CreateRoom)], [
+                  html.text("create or join a room"),
+                ]),
+                case model.saved_room {
+                  Some(room) -> {
+                    html.div(sketch.class([]), [], [
+                      html.text("Rooms"),
+                      html.button(
+                        sketch.class([]),
+                        [event.on_click(RoomExists(room))],
+                        [
+                          html.text("room name: " <> room.name),
+                          html.text("room password: " <> room.password),
+                        ],
+                      ),
+                    ])
+                  }
+                  None -> {
+                    html.div(sketch.class([]), [], [
+                      html.text("no saved rooms found"),
+                    ])
+                  }
+                },
+              ]
+            }
+            Some(room) -> {
+              [
+                html.div(
+                  sketch.class([]),
+                  [
+                    attribute.id("notes-container"),
+                    event.on("content-update", content_updated),
+                  ],
+                  [
                     html.input(sketch.class([]), [
                       attribute.type_("text"),
                       attribute.value(model.note_name),
@@ -378,48 +378,48 @@ fn view(model: Model) {
                         "make sure you have the same password and name on your other devices",
                       ),
                     ]),
-                  ]),
-                  element.fragment(
-                    model.notes
-                    |> list.index_map(fn(note, index) {
-                      html.div(sketch.class([]), [], [
-                        html.button(
-                          sketch.class([]),
-                          [event.on_click(DeleteNote(index))],
-                          [html.text("x")],
-                        ),
-                        html.button(
-                          sketch.class([]),
-                          [event.on_click(OnRouteChange(Url(note)))],
-                          [html.text(note)],
-                        ),
-                      ])
-                    }),
-                  ),
-                ]
-              }
+                  ],
+                ),
+                element.fragment(
+                  model.notes
+                  |> list.index_map(fn(note, index) {
+                    html.div(sketch.class([]), [], [
+                      html.button(
+                        sketch.class([]),
+                        [event.on_click(DeleteNote(index))],
+                        [html.text("x")],
+                      ),
+                      html.button(
+                        sketch.class([]),
+                        [event.on_click(OnRouteChange(Url(note)))],
+                        [html.text(note)],
+                      ),
+                    ])
+                  }),
+                ),
+              ]
             }
           }
-          _ -> {
-            [
-              html.div(container(), [attribute.class("editor-container")], [
-                element.element(
-                  "collaborative-editor",
-                  editor(),
-                  [
-                    attribute.class("editor-element"),
-                    attribute.attribute("document-name", document_name),
-                  ],
-                  [],
-                ),
-                html.div(slides(), [attribute.class("slides-element")], []),
-              ]),
-            ]
-          }
+        }
+        _ -> {
+          [
+            html.div(container(), [attribute.class("editor-container")], [
+              element.element(
+                "collaborative-editor",
+                editor(),
+                [
+                  attribute.class("editor-element"),
+                  attribute.attribute("document-name", document_name),
+                ],
+                [],
+              ),
+              html.div(slides(), [attribute.class("slides-element")], []),
+            ]),
+          ]
         }
       }
-    },
-  )
+    }
+  })
 }
 
 fn container() {

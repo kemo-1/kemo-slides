@@ -11,7 +11,7 @@ import * as awarenessProtocol from 'y-protocols/awareness.js'
 import '../../node_modules/reveal.js/dist/reveal.css'
 import './theme.css'
 import './styles.css'
-import RevealMenu from './menu/menu.esm.js'
+
 import Reveal from 'reveal.js/dist/reveal.esm';
 //@ts-ignore 
 import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
