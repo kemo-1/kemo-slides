@@ -210,9 +210,9 @@ li[data-slide-v] {
         pointer-events: none;
     }
 
-    p {
+    /* p {
         word-break: break-all;
-    }
+    } */
 
     /* Give a remote user a caret */
     .collaboration-cursor__caret {
