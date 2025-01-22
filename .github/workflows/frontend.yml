@@ -23,7 +23,7 @@ jobs:
       - run: cd lustre && gleam deps download 
         
       - name: Build project
-        run: cd lustre && npm run build
+        run: cd lustre && npm install && npm run build
         
       - name: Upload static files as artifact
         id: deployment
@@ -33,16 +33,13 @@ jobs:
 
   # Deployment job
   deploy:
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+     runs-on: ubuntu-latest
+     steps:
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: ${{ secrets.CLOUDFLARE_NAME }}
+          directory: lustre/dist/
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
