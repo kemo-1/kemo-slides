@@ -107,6 +107,10 @@ li[data-slide-v] {
     display: none;
 }
 
+:-webkit-full-screen .fsfxautobutton {
+    margin-left: 0px !important;
+}
+
 .name-page {
 
     font-size: xx-large;
