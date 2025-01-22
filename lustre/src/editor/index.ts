@@ -111,7 +111,7 @@ export class CollaborativeEditor extends HTMLElement {
         this.appendChild(editorDiv)
 
         const documentName = this.getAttribute('document-name') || 'default-doc'
-        const serverUrl = this.getAttribute('server-url') || '192.168.8.118:8000'
+        const serverUrl = this.getAttribute('server-url') || 'hail-past-brochure.glitch.me'
         const room = localStorage.getItem("room")
         const yDoc = new Y.Doc()
         if (room) {
@@ -140,7 +140,7 @@ export class CollaborativeEditor extends HTMLElement {
     }
 
     initializeConnections(yDoc: Y.Doc, provider: IndexeddbPersistence, documentName: string, serverUrl: string) {
-        const docSocket = new WebSocket(`ws://${serverUrl}/api/${documentName}`)
+        const docSocket = new WebSocket(`wss://${serverUrl}/api/${documentName}`)
 
         this.setupWebSocketHandlers(docSocket, yDoc, provider)
         this.setupUpdateListeners(yDoc, provider, docSocket)

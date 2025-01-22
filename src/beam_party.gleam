@@ -23,6 +23,7 @@ fn new_response(status: Int, body: String) {
 fn cors() {
   cors.new()
   |> cors.allow_origin("http://localhost:5137")
+  |> cors.allow_origin("http://localhost:8000")
   |> cors.allow_method(http.Get)
   |> cors.allow_method(http.Post)
   |> cors.allow_method(http.Connect)
@@ -46,12 +47,12 @@ pub fn main() {
   let assert Ok(pubsub) = pubsub.start()
   let assert Ok(_) =
     mist.new(fn(request) {
-      use request <- cors.mist_middleware(request, cors())
+      use req <- cors.mist_middleware(request, cors())
 
-      let response = case request.path_segments(request) {
+      let response = case request.path_segments(req) {
         ["api", ..] -> {
           let new_list =
-            request.path_segments(request)
+            request.path_segments(req)
             |> list.drop(1)
             |> string.join("/")
 
@@ -63,7 +64,7 @@ pub fn main() {
           //   })
           //   |> Ydoc
 
-          websocket.start(request, pubsub, Ydoc(new_list), table) |> Ok
+          websocket.start(req, pubsub, Ydoc(new_list), table) |> Ok
         }
 
         _ -> {
