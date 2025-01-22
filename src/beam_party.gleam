@@ -24,6 +24,7 @@ fn cors() {
   cors.new()
   |> cors.allow_origin("http://localhost:5137")
   |> cors.allow_origin("http://localhost:8000")
+  |> cors.allow_origin("https://hail-past-brochure.glitch.me")
   |> cors.allow_method(http.Get)
   |> cors.allow_method(http.Post)
   |> cors.allow_method(http.Connect)
