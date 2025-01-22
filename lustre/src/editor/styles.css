@@ -5,6 +5,13 @@
 
 }
 
+@media (max-width: 757px) {
+    .fsfxautobutton {
+        margin-left: 30px !important
+    }
+
+}
+
 strong {
     color: var(--r-bold-color);
 }
@@ -91,6 +98,10 @@ li[data-slide-v] {
     direction: rtl !important;
     text-align: right !important;
 }
+
+/* .slide-menu-button {
+    size: 1rem;
+} */
 
 :-webkit-full-screen .slide-menu-button {
     display: none;
