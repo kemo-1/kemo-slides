@@ -214,7 +214,7 @@ export class CollaborativeEditor extends HTMLElement {
                 CollaborationCursor.configure({
                     provider: provider,
                     user: {
-                        name: myName,
+                        // name: myName,
                         color: myColor,
                     },
                 }),
@@ -273,12 +273,12 @@ const debouncedRevealUpdate = debounce((editor: any) => {
         //@ts-ignore
         slideNumber: function () {
             var idx = window.Reveal.getIndices();
-            var value = ["Chapter " + idx.h];
+            var value = ["الوحدة " + idx.h];
             if (idx.h === 0) {
                 value = [""]
             } else if (idx.v > 0) {
                 //@ts-ignore
-                value.push('Section ');
+                value.push('الشريحة ');
                 //@ts-ignore
                 value.push(idx.v);
             }
@@ -293,8 +293,8 @@ const debouncedRevealUpdate = debounce((editor: any) => {
                 position: {
                     top: 'null',
                     bottom: '20px',
-                    left: 'null',
-                    right: '20px',
+                    left: '20px',
+                    right: 'null',
                 }
             },
         },
@@ -306,17 +306,17 @@ const debouncedRevealUpdate = debounce((editor: any) => {
             useTextContentForMissingTitles: true,
             hideMissingTitles: false,
             markers: true,
-            custom: [
-                {
-                    title: 'print',
-                    icon: '<i class="fas fa-file-pdf"></i>',
-                    content: `    
-                <a style="text-decoration: none;" href="#?print-pdf">
-                  <h1>click here to print the slides to pdf</h1>
-                  <i class="fas fa-file-pdf"></i>
-                </a>`
-                },
-            ],
+            // custom: [
+            //     {
+            //         title: 'print',
+            //         icon: '<i class="fas fa-file-pdf"></i>',
+            //         content: `    
+            //     <a style="text-decoration: none;" href="#?print-pdf">
+            //       <h1>click here to print the slides to pdf</h1>
+            //       <i class="fas fa-file-pdf"></i>
+            //     </a>`
+            //     },
+            // ],
             themes: false,
             transitions: false,
             openButton: true,
@@ -372,12 +372,12 @@ const debouncedRevealCreate = debounce((editor: any) => {
         //@ts-ignore
         slideNumber: function () {
             var idx = window.Reveal.getIndices();
-            var value = ["Chapter " + idx.h];
+            var value = ["الوحدة " + idx.h];
             if (idx.h === 0) {
                 value = [""]
             } else if (idx.v > 0) {
                 //@ts-ignore
-                value.push('Section ');
+                value.push('الشريحة ');
                 //@ts-ignore
                 value.push(idx.v);
             }
@@ -392,8 +392,8 @@ const debouncedRevealCreate = debounce((editor: any) => {
                 position: {
                     top: 'null',
                     bottom: '20px',
-                    left: 'null',
-                    right: '20px',
+                    left: '20px',
+                    right: 'null',
                 }
             },
         },
@@ -405,17 +405,17 @@ const debouncedRevealCreate = debounce((editor: any) => {
             useTextContentForMissingTitles: true,
             hideMissingTitles: false,
             markers: true,
-            custom: [
-                {
-                    title: 'print',
-                    icon: '<i class="fas fa-file-pdf"></i>',
-                    content: `    
-                <a style="text-decoration: none;" href="#?print-pdf">
-                  <h1>click here to print the slides to pdf</h1>
-                  <i class="fas fa-file-pdf"></i>
-                </a>`
-                },
-            ],
+            // custom: [
+            //     {
+            //         title: 'print',
+            //         icon: '<i class="fas fa-file-pdf"></i>',
+            //         content: `    
+            //     <a style="text-decoration: none;" href="#?print-pdf">
+            //       <h1>click here to print the slides to pdf</h1>
+            //       <i class="fas fa-file-pdf"></i>
+            //     </a>`
+            //     },
+            // ],
             themes: false,
             transitions: false,
             openButton: true,
