@@ -20,16 +20,6 @@ fn new_response(status: Int, body: String) {
   |> response.set_body(body |> bytes_tree.from_string |> mist.Bytes)
 }
 
-fn cors() {
-  cors.new()
-  |> cors.allow_origin("http://localhost:5137")
-  |> cors.allow_origin("http://localhost:8000")
-  |> cors.allow_origin("https://hail-past-brochure.glitch.me")
-  |> cors.allow_method(http.Get)
-  |> cors.allow_method(http.Post)
-  |> cors.allow_method(http.Connect)
-}
-
 pub fn main() {
   let table = case
     uset.file2tab(
@@ -47,9 +37,7 @@ pub fn main() {
   }
   let assert Ok(pubsub) = pubsub.start()
   let assert Ok(_) =
-    mist.new(fn(request) {
-      use req <- cors.mist_middleware(request, cors())
-
+    mist.new(fn(req) {
       let response = case request.path_segments(req) {
         ["api", ..] -> {
           let new_list =

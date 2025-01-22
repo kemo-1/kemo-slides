@@ -16,7 +16,7 @@ export async function init_connection() {
         documentName = obj.name + obj.password
 
         let saved_doc = localStorage.getItem("loro_doc")
-        const serverUrl = 'hail-past-brochure.glitch.me'
+        const serverUrl = 'hail-past-brochure.glitch.me:8000'
         const Socket = new WebSocket(`wss://${serverUrl}/api/${documentName}`)
         if (saved_doc) {
             let bytes = toUint8Array(saved_doc)
