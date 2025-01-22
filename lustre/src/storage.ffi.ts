@@ -5,9 +5,10 @@ import { LoroDoc } from "loro-crdt";
 //@ts-ignore 
 import { Ok, Error } from './gleam.mjs'
 const loro_doc = new LoroDoc()
-
+import P2PCF from 'p2pcf'
 
 export async function init_connection() {
+
     const room = localStorage.getItem("room")
     let documentName
 
@@ -16,7 +17,7 @@ export async function init_connection() {
         documentName = obj.name + obj.password
 
         let saved_doc = localStorage.getItem("loro_doc")
-        const serverUrl = 'hail-past-brochure.glitch.me:8000'
+        const serverUrl = 'hail-past-brochure.glitch.me'
         const Socket = new WebSocket(`wss://${serverUrl}/api/${documentName}`)
         if (saved_doc) {
             let bytes = toUint8Array(saved_doc)
