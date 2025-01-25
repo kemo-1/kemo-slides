@@ -326,24 +326,24 @@ fn view(model: Model) {
                   Some(room) -> {
                     html.div(sketch.class([]), [], [
                       html.text("آخر غرفة تم الدخول إليها:"),
-                    ])
-                    html.div(sketch.class([]), [], [
-                      html.button(
-                        sketch.class([]),
-                        [event.on_click(RoomExists(room))],
-                        [
-                          html.div(sketch.class([]), [], [
-                            html.text("اسم الغرفة :"),
-                            html.br(sketch.class([]), []),
-                            html.text("\"" <> room.name <> "\""),
-                          ]),
-                          html.div(sketch.class([]), [], [
-                            html.text("كلمة مرور الغرفة :"),
-                            html.br(sketch.class([]), []),
-                            html.text("\"" <> room.password <> "\""),
-                          ]),
-                        ],
-                      ),
+                      html.div(sketch.class([]), [], [
+                        html.button(
+                          sketch.class([]),
+                          [event.on_click(RoomExists(room))],
+                          [
+                            html.div(sketch.class([]), [], [
+                              html.text("اسم الغرفة :"),
+                              html.br(sketch.class([]), []),
+                              html.text("\"" <> room.name <> "\""),
+                            ]),
+                            html.div(sketch.class([]), [], [
+                              html.text("كلمة مرور الغرفة :"),
+                              html.br(sketch.class([]), []),
+                              html.text("\"" <> room.password <> "\""),
+                            ]),
+                          ],
+                        ),
+                      ]),
                     ])
                   }
                   None -> {
