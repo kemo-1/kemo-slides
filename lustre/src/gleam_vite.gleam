@@ -325,13 +325,23 @@ fn view(model: Model) {
                 case model.saved_room {
                   Some(room) -> {
                     html.div(sketch.class([]), [], [
-                      html.text("الغرفة المحفوظة :"),
+                      html.text("آخر غرفة تم الدخول إليها:"),
+                    ])
+                    html.div(sketch.class([]), [], [
                       html.button(
                         sketch.class([]),
                         [event.on_click(RoomExists(room))],
                         [
-                          html.text("اسم الغرفة: " <> room.name),
-                          html.text("كلمة مرور الغرفة: " <> room.password),
+                          html.div(sketch.class([]), [], [
+                            html.text("اسم الغرفة :"),
+                            html.br(sketch.class([]), []),
+                            html.text("\"" <> room.name <> "\""),
+                          ]),
+                          html.div(sketch.class([]), [], [
+                            html.text("كلمة مرور الغرفة :"),
+                            html.br(sketch.class([]), []),
+                            html.text("\"" <> room.password <> "\""),
+                          ]),
                         ],
                       ),
                     ])
