@@ -305,38 +305,40 @@ fn view(model: Model) {
           case model.room {
             None -> {
               [
-                html.div(sketch.class([]), [], [html.text("Enter room name")]),
+                html.div(sketch.class([]), [], [
+                  html.text("قم بإدخال اسم الغرفة"),
+                ]),
                 html.input(sketch.class([]), [
                   attribute.type_("text"),
                   event.on_input(RoomNameInputChanged),
                 ]),
                 html.div(sketch.class([]), [], [
-                  html.text("Enter room password"),
+                  html.text("قم بإدخال كلمة مرور الغرفة"),
                 ]),
                 html.input(sketch.class([]), [
                   attribute.type_("password"),
                   event.on_input(RoomPasswordInputChanged),
                 ]),
                 html.button(sketch.class([]), [event.on_click(CreateRoom)], [
-                  html.text("create or join a room"),
+                  html.text("قم بإنشاء أو دخول غرفة"),
                 ]),
                 case model.saved_room {
                   Some(room) -> {
                     html.div(sketch.class([]), [], [
-                      html.text("Rooms"),
+                      html.text("الغرفة المحفوظة :"),
                       html.button(
                         sketch.class([]),
                         [event.on_click(RoomExists(room))],
                         [
-                          html.text("room name: " <> room.name),
-                          html.text("room password: " <> room.password),
+                          html.text("اسم الغرفة: " <> room.name),
+                          html.text("كلمة مرور الغرفة: " <> room.password),
                         ],
                       ),
                     ])
                   }
                   None -> {
                     html.div(sketch.class([]), [], [
-                      html.text("no saved rooms found"),
+                      html.text("لا يوجد غرفة محفوظة"),
                     ])
                   }
                 },
@@ -358,24 +360,24 @@ fn view(model: Model) {
                       attribute.style([#("color", "black")]),
                     ]),
                     html.button(sketch.class([]), [event.on_click(AddNote)], [
-                      html.text("add a new note"),
+                      html.text("قم بإضافة عرض تقديمي جديد"),
                     ]),
                     html.div(sketch.class([]), [], [
-                      html.text("your room name is \"" <> room.name <> "\""),
+                      html.text("اسم الغرفة : \"" <> room.name <> "\""),
                     ]),
                     html.div(sketch.class([]), [], [
                       html.text(
-                        "your room password is \"" <> room.password <> "\"",
+                        "كلمة مرور الغرفة : \"" <> room.password <> "\"",
                       ),
                     ]),
                     html.div(sketch.class([]), [], [
                       html.button(sketch.class([]), [event.on_click(ExitRoom)], [
-                        html.text("exit room"),
+                        html.text("قم بالخروج من الغرفة"),
                       ]),
                     ]),
                     html.div(sketch.class([]), [], [
                       html.text(
-                        "make sure you have the same password and name on your other devices",
+                        "قم بالتأكد أن اسم وكلمة مرور الغرفة مطابقة تماما في أجهزتك الأخرى",
                       ),
                     ]),
                   ],
@@ -385,9 +387,12 @@ fn view(model: Model) {
                   |> list.index_map(fn(note, index) {
                     html.div(sketch.class([]), [], [
                       html.button(
-                        sketch.class([]),
+                        sketch.class([
+                          sketch.background_color("#ff6363"),
+                          sketch.color("black"),
+                        ]),
                         [event.on_click(DeleteNote(index))],
-                        [html.text("x")],
+                        [html.text("X")],
                       ),
                       html.button(
                         sketch.class([]),

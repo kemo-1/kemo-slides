@@ -12,7 +12,7 @@ export async function init_connection() {
 
 
     const room = localStorage.getItem("room")
-    let documentName
+
 
     if (room) {
         let yDoc = new Y.Doc()
