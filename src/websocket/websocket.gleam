@@ -99,7 +99,7 @@ fn handle_message(
                       case
                         uset.tab2file(
                           state.table,
-                          "database/db.ets",
+                          ".data/db.ets",
                           True,
                           True,
                           False,

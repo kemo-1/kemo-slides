@@ -23,7 +23,7 @@ fn new_response(status: Int, body: String) {
 pub fn main() {
   let table = case
     uset.file2tab(
-      "database/db.ets",
+      ".data/db.ets",
       True,
       fn(table) { table |> dynamic.string },
       fn(table) { table |> dynamic.string },
